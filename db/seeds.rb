@@ -1,0 +1,43 @@
+require 'pry'
+
+User.create(name: "Sam")
+User.create(name: "Dustin")
+User.create(name: "Michelle")
+User.create(name: "Tanzima")
+
+Personality.create(name: "INTJ", meme_id: 1)
+Personality.create(name: "INTP", meme_id: 2)
+Personality.create(name: "ENTJ", meme_id: 3)
+Personality.create(name: "ENTP", meme_id: 4)
+Personality.create(name: "INFJ", meme_id: 5)
+Personality.create(name: "INFP", meme_id: 6)
+Personality.create(name: "ENFJ", meme_id: 7)
+Personality.create(name: "ENFP", meme_id: 8)
+Personality.create(name: "ISTJ", meme_id: 9)
+Personality.create(name: "ISFJ", meme_id: 10)
+Personality.create(name: "ESTJ", meme_id: 11)
+Personality.create(name: "ESFJ", meme_id: 12)
+Personality.create(name: "ISTP", meme_id: 13)
+Personality.create(name: "ISFP", meme_id: 14)
+Personality.create(name: "ESTP", meme_id: 15)
+Personality.create(name: "ESFP", meme_id: 16)
+
+Meme.create(name: "ARCHITECT")
+Meme.create(name: "LOGICIAN")
+Meme.create(name: "COMMANDER")
+Meme.create(name: "DEBATER")
+Meme.create(name: "ADVOCATE")
+Meme.create(name: "MEDIATOR")
+Meme.create(name: "PROTAGONIST")
+Meme.create(name: "CAMPAIGNER")
+Meme.create(name: "LOGISTICIAN")
+Meme.create(name: "DEFENDER")
+Meme.create(name: "EXECUTIVE")
+Meme.create(name: "CONSUL")
+Meme.create(name: "VIRTUOUSO")
+Meme.create(name: "ADVENTURER")
+Meme.create(name: "ENTREPRENEUR")
+Meme.create(name: "ENTERTAINER")
+binding.pry
+
+puts "lol"
