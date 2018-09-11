@@ -10,3 +10,11 @@ Drink.create(name: "Sazerac")
 Drink.create(name: "Blue motorcyle")
 Drink.create(name: "Blue crush")
 Drink.create(name: "Purple haze")
+
+Bar.create(name: "Mad Hatter")
+Bar.create(name: "Heist")
+Bar.create(name: "Dirty Bar")
+
+Bartender.create(name: "Dru")
+Bartender.create(name: "Sam", bar_id: 1)
+Bartender.create(name: "Hulk Hogan", bar_id: 3)
