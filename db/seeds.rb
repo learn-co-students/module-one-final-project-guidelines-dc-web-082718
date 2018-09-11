@@ -18,3 +18,8 @@ Bar.create(name: "Dirty Bar")
 dru = Bartender.create(name: "Dru")
 sam = Bartender.create(name: "Sam", bar_id: 1)
 hulk = Bartender.create(name: "Hulk Hogan", bar_id: 3)
+
+BartenderDrink.create(bartender_id: 1, drink_id: 1)
+BartenderDrink.create(bartender_id: 1, drink_id: 2)
+BartenderDrink.create(bartender_id: 2, drink_id: 3)
+BartenderDrink.create(bartender_id: 2, drink_id: 4)
