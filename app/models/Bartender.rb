@@ -35,6 +35,11 @@ class Bartender < ActiveRecord::Base
     self.save
   end
 
+  #list all bartenders that dont have a job.
+  def self.unemployed
+    Bartender.all.where(bar_id: nil) 
+  end
+
 
 
 end
