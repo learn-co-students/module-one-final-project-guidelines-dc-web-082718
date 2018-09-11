@@ -19,13 +19,13 @@ def box_office_data_collector
     url = movie_box.css("a").attr("href").value
 
     # Turns that movie into a new class object
-    Movie.create(name: title, tomatometer: score, url: url)
+    Movie.find_or_create_by(name: title, tomatometer: score, url: url)
   end
 end
 
 box_office_data_collector
 
-def pull_cast_members(doc)
+def pull_cast_members(doc, movie)
   # This method will be placed inside the movie page scraper later.
 
   # Iterates over each cast member and creates a new
@@ -40,32 +40,59 @@ def pull_cast_members(doc)
     actor = Actor.find_or_create_by(name: actor_name)
 
     # Create a new character based on this actor and the character pulled.
-    Character.find_or_create_by(name: character_name, actor_id: actor.id)
+    Character.find_or_create_by(name: character_name, actor_id: actor.id, movie_id: movie.id)
 
   end
 end
 
-def pull_detailed_movie_info(doc)
+def find_or_create_genre_from(doc)
+  genre_name = doc.css("div.meta-value")[1].text.strip
+  Genre.find_or_create_by(name: genre_name)
+end
 
-  #TODO Here is all the pulled data. This needs to be added to a
-  # movie object in the database.
-  rating = doc.css("div.meta-value").first.text[0]
-  genre = doc.css("div.meta-value")[1].text.strip
-  director = doc.css("div.meta-value")[2].text.strip
-  writer = doc.css("div.meta-value")[3].text.strip
-  in_theaters = doc.css("div.meta-value")[4].text.strip[0,11]
-  in_theaters.slice!('\n wide')
-  runtime = doc.css("div.meta-value")[5].text.strip.to_i
-  studio = doc.css("div.meta-value")[6].text.strip
+def find_or_create_director_from(doc)
+  director_name = doc.css("div.meta-value")[2].text.strip
+  Director.find_or_create_by(name: director_name)
+end
+
+def format_release_date_from(doc)
+  # This came with a buch of trash on the end so it needed to be formatted.
+  release_date = doc.css("div.meta-value")[4].text.strip[0,11]
+  release_date.slice!('\n wide')
+  release_date
+end
+
+def pull_detailed_movie_info(doc, movie)
+
+  # Calls on helper methods to deal with genre, director and release date
+  movie.genre_id = find_or_create_genre_from(doc).id
+  movie.director_id = find_or_create_director_from(doc).id
+  movie.release_date = format_release_date_from(doc)
+
+  # These are simple enough to deal with directly but we must check if the
+  # field in question exists.
+  if doc.css("div.meta-value").first != nil
+    #TODO - This isn't working on PG or PG-13 movies.
+    movie.rating = doc.css("div.meta-value").first.text.split.first
+  end
+  if doc.css("div.meta-value")[3] != nil
+    #TODO - Why is writer being assigned F in all cases?
+    movie.writer = doc.css("div.meta-value")[3].text.strip
+  end
+  if doc.css("div.meta-value")[5] != nil
+    movie.runtime = doc.css("div.meta-value")[5].text.strip.to_i
+  end
+  if doc.css("div.meta-value")[6] != nil
+    movie.studio = doc.css("div.meta-value")[6].text.strip
+  end
+
+  movie.save
 
 end
 
-def movie_data_collector(url)
+def movie_data_collector(movie)
 
-  # Ultimately this will accept a movie object and then
-  # use its url extension to find movies. Right now it's not doing that for
-  # testing purposes.
-  # url = "https://www.rottentomatoes.com" + movie.url
+  url = "https://www.rottentomatoes.com" + movie.url
 
   # Directs the browser to the URL of our movie.
   $browser.goto url
@@ -73,16 +100,16 @@ def movie_data_collector(url)
 
   # Calls the pull_cast_members method to make new characters
   # and potentially new actors from the movie page
-  pull_cast_members(doc)
+  pull_cast_members(doc, movie)
 
   # Collects additional information about the movie, including
   # runtime, genre (find or creating a genre), director
   # (find or creating a director), and rating (like how spoopy and adult it is)
-  pull_detailed_movie_info(doc)
+  pull_detailed_movie_info(doc, movie)
+
+  movie
 
 end
-
-movie_data_collector("https://www.rottentomatoes.com/m/the_nun_2018")
 
 def full_scraper
 
@@ -91,8 +118,10 @@ def full_scraper
 
   # Iterates over each movie to collect additional data, including
   # information about actors and characters.
-  Movie.all.each do |movie|
+  Movie.all.map do |movie|
     movie_data_collector(movie)
   end
 
 end
+
+full_scraper
