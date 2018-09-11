@@ -2,6 +2,7 @@ require_relative '../config/environment'
 ActiveRecord::Base.logger = nil
 
 def greeting
+  system('clear')
   puts File.read('app/ascii/tomatr_ascii')
   puts "Welcome to Tomatr!"
   prompt = TTY::Prompt.new
@@ -60,13 +61,10 @@ end
 
 def top_ten_menu
 
-  # Calls on helper method to puts the top ten movies.
   display_top_ten
 
-  # Ask if the user would like to see more info
   yesno = see_more_info?.upcase
 
-  #TODO What happens when the user doesn't input yes or no?
   case yesno
   when "YES"
     movie = ask_for_movie
@@ -82,19 +80,14 @@ def top_ten_menu
 end
 
 def ask_for_movie
-  #TODO Deal with cases where they don't input a movie correctly
   #TODO Did you mean...?
   prompt = TTY::Prompt.new
   prompt.ask("Enter the name of a movie.")
 end
 
-
-
 def put_movie_info(movie_name)
-  # Accepts a movie name as a string and puts info about it
-  # Titlizes the movie name
+  # Accepts a movie name as a string and puts info about it if it exists
   formatted_movie_name = titleize(movie_name)
-  #TODO Find a sexier way of doing this
     if Movie.find_by(name: formatted_movie_name) != nil
       puts Movie.find_by(name: formatted_movie_name).info
     else
@@ -115,6 +108,7 @@ def genre_prompter
 end
 
 def list_genres
+  # Streamline?
   i = 1
   puts "Possible genre choices:"
   Genre.all.each do |genre|
@@ -124,18 +118,15 @@ def list_genres
 end
 
 def find_movies_by_genre(genre)
-  # Accepts a string and finds movies by that genre string
-  # Returns an array of genre objects
   Genre.find_by(name: genre).movies
 end
 
 def genre_menu_method
-  # puts a list of potential genres
+
   list_genres
-  # ask for a genre
+
   genre = titleize(genre_prompter)
-  # Check if the genre is a legitimate genre
-  # Then use that response to find movies.
+
   if Genre.find_by(name: genre) != nil
     movies = find_movies_by_genre(genre)
     movies.each do |movie|
@@ -160,17 +151,12 @@ def find_movies_by_actor(actor)
 end
 
 def actor_menu_method
-  #TODO Give a list of possible actor choices?
-  # But maybe not because it would be so long...
-  # Ask for an actor
+
   actor = titleize(actor_prompter)
 
-  # Checks if the actor actuallye exists
   if Actor.find_by(name: actor) != nil
     # Finds movies by the actor and then turns them into an array of strings.
-    # Helper methods, woo!
     movie_titles = movie_objects_to_names(find_movies_by_actor(actor))
-    # output
     puts "#{actor} is currently starring in #{movie_titles.join(', ')}."
   else
     puts "That is not a valid actor."
@@ -187,6 +173,7 @@ def find_movies_by_director(director)
 end
 
 def director_menu_method
+  # Asks for a director and titleizes her name
   director = titleize(director_prompter)
 
   if Director.find_by(name: director) != nil
@@ -198,7 +185,6 @@ def director_menu_method
 end
 
 def menu_reader(input)
-  # Chooses a next step based on the menu input
   case input
   when 1
     # top ten movies
