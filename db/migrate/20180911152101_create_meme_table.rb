@@ -3,6 +3,7 @@ class CreateMemeTable < ActiveRecord::Migration[5.0]
     create_table :memes do |t|
     t.string :name
     t.string :url
+    t.integer :personality_id
 
     t.timestamps
   end
