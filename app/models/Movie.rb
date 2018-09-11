@@ -26,18 +26,34 @@ class Movie < ActiveRecord::Base
     order_by_tomatometer.last
   end
 
+  def self.family_friendly
+    #TODO This is pretty ugly, definitely should be refactored, but
+    # I was struggling to get it to work with higher level methods
+    array = []
+    all.map do |movie|
+      movie.genres.each do |genre|
+        if genre.name == 'Kids & Family'
+          array << movie
+        end
+      end
+    end
+    array
+  end
+
   # Instance Methods
 
   def certified_fresh?
     if(tomatometer >= 75)
       "certified fresh"
+    elsif(tomatometer < 75 && tomatometer >= 60)
+      "fresh"
     else
-      "not certified fresh"
+      "certified rotten"
     end
   end
 
   def info
-    puts "#{name} is rated #{rating}"
+    puts "#{name} is rated #{rating}."
     puts "#{name} is #{certified_fresh?}!"
     puts "#{name} has a runtime of #{runtime} minutes."
     puts "Directed by #{director.name}."
