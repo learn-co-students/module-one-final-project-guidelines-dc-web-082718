@@ -1,0 +1,6 @@
+- Create Tomatr logo ASCII art
+- Figure out how to color code stuff
+- Scrape a movie description from the movie page
+- Scrape some sample reviews
+- Create CLI menus
+- Write out methods for each menu option

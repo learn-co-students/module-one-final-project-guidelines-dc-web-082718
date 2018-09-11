@@ -45,9 +45,25 @@ def pull_cast_members(doc, movie)
   end
 end
 
-def find_or_create_genre_from(doc)
-  genre_name = doc.css("div.meta-value")[1].text.strip
-  Genre.find_or_create_by(name: genre_name)
+def genre_array_parser(array, movie)
+  # Find or create new genre objects from an array of strings
+  # Associates the genres with the movie through a join table.
+  # Returns an array of genres
+  array.map do |genre_name|
+    genre = Genre.find_or_create_by(name: genre_name)
+    GenreMovieJoinTable.create(genre_id: genre.id, movie_id: movie.id)
+    genre
+  end
+end
+
+def find_or_create_genre_from(doc, movie)
+  # If there are multiple genres, split them at the comma
+  genre_array = doc.css("div.meta-value")[1].text.strip.split(',')
+  # Remove leading space and new lines
+  formatted_array = genre_array.map{|genre_name|genre_name = genre_name.gsub("\n","").strip}
+  # Calls on the genre array parser documented above
+  genre_array_parser(formatted_array, movie)
+
 end
 
 def find_or_create_director_from(doc)
@@ -65,18 +81,16 @@ end
 def pull_detailed_movie_info(doc, movie)
 
   # Calls on helper methods to deal with genre, director and release date
-  movie.genre_id = find_or_create_genre_from(doc).id
+  find_or_create_genre_from(doc, movie)
   movie.director_id = find_or_create_director_from(doc).id
   movie.release_date = format_release_date_from(doc)
 
   # These are simple enough to deal with directly but we must check if the
   # field in question exists.
   if doc.css("div.meta-value").first != nil
-    #TODO - This isn't working on PG or PG-13 movies.
     movie.rating = doc.css("div.meta-value").first.text.split.first
   end
   if doc.css("div.meta-value")[3] != nil
-    #TODO - Why is writer being assigned F in all cases?
     movie.writer = doc.css("div.meta-value")[3].text.strip
   end
   if doc.css("div.meta-value")[5] != nil

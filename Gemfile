@@ -9,3 +9,4 @@ gem "pry"
 gem "require_all"
 gem 'watir'
 gem 'webdrivers'
+gem 'tty'
