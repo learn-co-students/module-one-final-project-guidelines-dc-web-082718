@@ -1,5 +1,6 @@
 require_relative '../config/environment'
+newcli = CommandLineInterface.new
 
-
-
-puts "HELLO WORLD"
+newcli.greet
+newcli.menu
+newcli.get_user_input
