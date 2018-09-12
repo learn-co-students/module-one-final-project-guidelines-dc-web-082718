@@ -30,4 +30,14 @@ class Bar < ActiveRecord::Base
     end
   end
 
+  def print_drink_menu
+    self.drinks.each {|drink| puts "    #{drink.name}"}
+  end
+
+  def list_current_employees
+    self.bartenders.each {|bartender| puts "    #{bartender.name}"}
+  end 
+
+
+
 end

@@ -65,10 +65,36 @@ end
     puts '*********Bar Management Menu*********\n\n\n'
     puts 'Please Select a Bar to Manage: '
     bar_chooser
-    # 1. Print Current Drink menu
-    # 2. List Current Employees
-    # 3. Hire New Employee
-    # 4. Fire Employee
+    valid_entry = false
+    while !valid_entry do
+
+      puts "********* You have chosen to manage #{@bar_choice.name}."
+      puts "Please make a selection from the menu options below.\n\n"
+      puts "    1. Print Current Drink menu"
+      puts "    2. List Current Employees"
+      puts "    3. Hire New Employee"
+      puts "    4. Fire Employee"
+      puts "    5. Return to Bar Owner Portal"
+      gets_user_input
+      valid_entry = true
+      case @input
+      when '1'
+        puts "You have chosen to Print Current Drink menu."
+        @bar_choice.print_drink_menu
+      when '2'
+        puts "You have chosen to List Current Employees."
+        @bar_choice.list_current_employees
+      when '3'
+        puts "You have chosen to Hire New Employee."
+      when '4'
+        puts "You have chosen to Fire an employee."
+      when '5'
+        puts "You have chosen to return to Bar Owner Portal"
+      else
+        puts "Please select a valid menu option."
+        valid_entry = false
+      end
+    end
   end
 
   def bar_chooser
