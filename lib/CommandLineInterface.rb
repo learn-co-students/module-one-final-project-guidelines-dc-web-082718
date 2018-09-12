@@ -92,16 +92,16 @@ end
 
 
 
-
-
 def test1
   system 'clear'
 puts "Great! Let us Begin."
 
+  test2(arr)
 end
 
-def test2
+def test2(arr)
 
+  test3()
 end
 def test3
 
