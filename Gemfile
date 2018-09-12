@@ -10,3 +10,4 @@ gem "require_all"
 gem 'watir'
 gem 'webdrivers'
 gem 'tty'
+gem 'database_cleaner'

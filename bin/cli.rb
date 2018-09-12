@@ -9,8 +9,100 @@ def greeting
   prompt.keypress("Press any key to continue.")
 end
 
-def menu
+# Login menu methods
+
+def activate_login_menu
   system('clear')
+  input = get_login_menu_input
+  login_menu_reader(input)
+end
+
+def get_login_menu_input
+  prompt = TTY::Prompt.new
+  prompt.select("Sign in or create a user.") do |menu|
+    menu.choice 'Sign in', 1
+    menu.choice 'Create user', 2
+  end
+end
+
+def login_menu_reader(input)
+  case input
+  when 1
+    sign_in
+  when 2
+    create_user
+  end
+end
+
+def create_user
+  username = ask_for_username
+  password = ask_for_password
+  name = ask_for_name
+  age = ask_for_age
+  User.create(username: username, password: password, name: name, age: age)
+  return_to_login_menu?
+  activate_login_menu
+end
+
+def ask_for_name
+  prompt = TTY::Prompt.new
+  prompt.ask("Please enter your name.")
+end
+
+def ask_for_age
+  prompt = TTY::Prompt.new
+  prompt.ask("Please enter your age.")
+end
+
+def return_to_login_menu?
+  return_prompt = TTY::Prompt.new
+  return_prompt.keypress("Press any key to go back.")
+end
+
+def continue_to_main_menu
+  prompt = TTY::Prompt.new
+  prompt.keypress("Press any key to continue.")
+  activate_main_menu
+end
+
+def valid_user?(username, password)
+  User.exists?(username: username, password: password)
+end
+
+def sign_in
+  username = ask_for_username
+  password = ask_for_password
+  if valid_user?(username, password) == true
+    $current_user = User.find_by(username: username, password: password)
+    welcome_user
+    continue_to_main_menu
+  else
+    puts "That is not a valid username/password combination."
+    return_to_login_menu?
+    activate_login_menu
+  end
+end
+
+def ask_for_username
+  prompt = TTY::Prompt.new
+  prompt.ask("Please enter your username.")
+end
+
+def ask_for_password
+  prompt = TTY::Prompt.new
+  prompt.mask("Please enter your password.")
+end
+
+def welcome_user
+  puts "Welcome, #{$current_user.name}!"
+end
+
+# Main menu methods
+
+def main_menu
+  system('clear')
+  puts File.read('app/ascii/tomatr_ascii')
+  puts "Hello, #{$current_user.name}!"
   prompt = TTY::Prompt.new
   prompt.select("Choose a menu option?") do |menu|
     menu.choice 'See the top ten freshest movies in theaters', 1
@@ -19,14 +111,15 @@ def menu
     menu.choice 'Find family-friendly movies', 4
     menu.choice 'Find movies starring a specific actor', 5
     menu.choice 'Find movies with a specific director', 6
-    menu.choice 'Exit Tomatr', 7
+    menu.choice 'Leave a review', 7
+    menu.choice 'Exit Tomatr', 8
   end
 end
 
-def return_to_menu?
+def return_to_main_menu?
   return_prompt = TTY::Prompt.new
   return_prompt.keypress("Press any key to return to the menu.")
-  activate_menu
+  activate_main_menu
 end
 
 def titleize(string)
@@ -70,11 +163,11 @@ def top_ten_menu
     movie = ask_for_movie
     puts "\n"
     put_movie_info(movie)
-    return_to_menu?
+    return_to_main_menu?
   when "NO"
-    return_to_menu?
+    return_to_main_menu?
   else
-    return_to_menu?
+    return_to_main_menu?
   end
 
 end
@@ -85,14 +178,46 @@ def ask_for_movie
   prompt.ask("Enter the name of a movie.")
 end
 
+def want_to_see_cast?(movie)
+  prompt = TTY::Prompt.new
+  yesno = prompt.yes?("Would you like to see info about the cast?") do |q|
+    q.suffix 'YES/NO'
+    q.positive 'YES'
+    q.negative 'NO'
+  end
+  case yesno.upcase
+  when "YES"
+    puts "\n"
+    puts movie.cast_info
+  end
+end
+
+def want_to_see_reviews?(movie)
+  prompt = TTY::Prompt.new
+  yesno = prompt.yes?("Would you like to see some reviews about this movie?") do |q|
+    q.suffix 'YES/NO'
+    q.positive 'YES'
+    q.negative 'NO'
+  end
+  case yesno.upcase
+  when "YES"
+    puts "\n"
+    movie.three_random_reviews
+  end
+end
+
 def put_movie_info(movie_name)
   # Accepts a movie name as a string and puts info about it if it exists
   formatted_movie_name = titleize(movie_name)
     if Movie.find_by(name: formatted_movie_name) != nil
-      puts Movie.find_by(name: formatted_movie_name).info
+      movie = Movie.find_by(name: formatted_movie_name)
+      puts movie.info
+      want_to_see_cast?(movie)
+      want_to_see_reviews?(movie)
+      return_to_main_menu?
     else
       puts 'That is not a valid movie. Returning to menu.'
-      return_to_menu?
+      return_to_main_menu?
     end
 end
 
@@ -192,43 +317,70 @@ def menu_reader(input)
   when 2
     # prompt for a specific movie then return info
     put_movie_info(ask_for_movie)
-    return_to_menu?
   when 3
     # genre prompt then return info
     genre_menu_method
-    return_to_menu?
+    return_to_main_menu?
   when 4
     #return family friendly movies
     family_friendly_finder
-    return_to_menu?
+    return_to_main_menu?
   when 5
     # prompt for an actor then return movies
     actor_menu_method
-    return_to_menu?
+    return_to_main_menu?
   when 6
     # prompt for a director then return movies
     director_menu_method
-    return_to_menu?
+    return_to_main_menu?
   when 7
-    puts "Goodbye!"
+    review_menu_execute
+  when 8
+    puts "Come back again soon!"
   end
 end
 
-def activate_menu
+def activate_main_menu
   # Presents a menu of options and records the user's input
-  input = menu
+  input = main_menu
   # Chooses a next step based on the menu input
   menu_reader(input)
 end
 
+# Review methods
+
+def review_menu_execute
+  which_movie_to_review?
+  return_to_main_menu?
+end
+
+def which_movie_to_review?
+  movie_name = ask_for_movie
+  formatted_movie_name = titleize(movie_name)
+  if Movie.find_by(name: formatted_movie_name) != nil
+    movie = Movie.find_by(name: formatted_movie_name)
+    create_review(movie)
+  else
+    puts "That is not a valid movie name."
+    return_to_main_menu?
+  end
+end
+
+def ask_for_review_content
+  prompt = TTY::Prompt.new
+  prompt.ask("Please enter the text of your review.")
+end
+
+def create_review(movie)
+  content = ask_for_review_content
+  Review.create(user_id: $current_user.id, movie_id: movie.id, content: content)
+end
+
+# CLI methods
+
 def cli_run
-  # Greets the user with some nice art.
   greeting
-  # Gets user input and chooses a next step
-  activate_menu
+  activate_login_menu
 end
 
 cli_run
-
-#TODO Why does Christopher Robin have a runtime of 0 minutes? Do any other movies
-# have this issue?

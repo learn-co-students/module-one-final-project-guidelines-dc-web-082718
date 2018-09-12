@@ -1,6 +1,3 @@
-- Create Tomatr logo ASCII art
-- Figure out how to color code stuff
-- Scrape a movie description from the movie page
-- Scrape some sample reviews
-- Create CLI menus
-- Write out methods for each menu option
+- Did you mean...? when entering incomplete strings
+- Deal with pages that don't have a runtime
+- When scraper is run it should clear and update movies but not users

@@ -5,6 +5,10 @@ require_relative '../config/environment'
 # load dynamic javascript elements.
 $browser = Watir::Browser.new
 
+def drop_movie_data
+  DatabaseCleaner.clean_with(:truncation, :only => ['movies', 'characters', 'actors', 'directors', 'genres', 'genre_movie_join_tables'])
+end
+
 def box_office_data_collector
   # Loads the box office page and scrapes it for HTML
   $browser.goto 'https://www.rottentomatoes.com/browse/in-theaters/'
@@ -13,12 +17,10 @@ def box_office_data_collector
   # Iterates over the front page to grab information about top grossing movies
   doc.css("div.mb-movie").each do |movie_box|
 
-    # Grabs the title, Tomatometer score and URL of a movie
     title = movie_box.css("h3.movieTitle").text
     score = movie_box.css("span.tMeterScore").text[0,2]
     url = movie_box.css("a").attr("href").value
 
-    # Turns that movie into a new class object
     Movie.find_or_create_by(name: title, tomatometer: score, url: url)
   end
 end
@@ -26,7 +28,6 @@ end
 box_office_data_collector
 
 def pull_cast_members(doc, movie)
-  # This method will be placed inside the movie page scraper later.
 
   # Iterates over each cast member and creates a new
   # character, and actor if there is none.
@@ -99,6 +100,9 @@ def pull_detailed_movie_info(doc, movie)
   if doc.css("div.meta-value")[6] != nil
     movie.studio = doc.css("div.meta-value")[6].text.strip
   end
+  if doc.css("p.critic_consensus") != nil
+    movie.critic_consensus = doc.css("p.critic_consensus").text.split("\n")[2].strip
+  end
 
   movie.save
 
@@ -116,9 +120,7 @@ def movie_data_collector(movie)
   # and potentially new actors from the movie page
   pull_cast_members(doc, movie)
 
-  # Collects additional information about the movie, including
-  # runtime, genre (find or creating a genre), director
-  # (find or creating a director), and rating (like how spoopy and adult it is)
+  # Collects additional information about the movie
   pull_detailed_movie_info(doc, movie)
 
   movie
@@ -126,6 +128,8 @@ def movie_data_collector(movie)
 end
 
 def full_scraper
+
+  drop_movie_data
 
   # Collects basic data about the box office from the front page
   box_office_data_collector
