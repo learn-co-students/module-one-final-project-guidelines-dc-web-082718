@@ -1,5 +1,4 @@
 require_relative '../config/environment'
 
-
-
-puts "HELLO WORLD"
+Interface.welcome
+Interface.main_menu
