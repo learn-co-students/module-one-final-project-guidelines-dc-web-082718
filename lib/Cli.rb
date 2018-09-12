@@ -131,12 +131,33 @@ end
       room_for_hire = (3 - @bar_choice.bartenders.size)
       # binding.pry
       puts "#{@bar_choice.name} has room to hire #{3 - @bar_choice.bartenders.size} bartender(s)."
-      puts "I am now calling sub-menu"
+      list_unemployed_bartenders
       #call sub-menu
       # 1. List unemployed
       # 2. Create new bartender?1
     end
   end
+
+  def list_unemployed_bartenders
+    unemployed = Bartender.unemployed
+    puts "***Select number of corresponding bartender you want to hire."
+
+    index = 0
+    while index < unemployed.length do
+      puts "#{index + 1}. #{unemployed[index].name}"
+      index += 1
+    end
+
+
+    # unemployed.each_with_index do |bartender, index|
+    #   puts "#{index + 1}. #{bartender.name}"
+      # puts "    Specialty Drinks are..."
+      # bartender.drinks.each {|drink| puts "       #{drink.name}\n"}
+    #end
+    # gets_user_input
+    # puts "You have hired #{unemployed[@input - 1].name}"
+  end
+
 end
 
 
