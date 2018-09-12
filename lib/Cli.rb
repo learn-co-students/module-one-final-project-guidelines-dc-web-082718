@@ -11,6 +11,29 @@ def gets_user_input
   @input = gets.chomp
 end
 
+def main_menu
+  valid_entry = false
+  while !valid_entry do
+    puts "*************MAIN MENU***************\n\n\n"
+    puts "********* 1. Bar Owner Portal"
+    puts "********* 2. Bartender Portal"
+    puts "********* 3. Exit this program."
+    puts "\n\n\nPlease enter a number from the options above:"
+    gets_user_input
+    if @input == "1"
+      puts "Opening Bar Portal"
+      bar_portal
+    elsif @input == "2"
+      puts "Opening Bartender Portal"
+      bartender_portal
+    elsif @input == "3"
+      valid_entry = true
+    else
+      puts "********* Please enter a valid command. *********\n\n\n"
+    end
+  end
+end
+
 def bar_portal
   valid_entry = false
   while !valid_entry do
@@ -33,7 +56,25 @@ def bar_portal
 end
 
 def bartender_portal
-#list options for bartenders
+  valid_entry = false
+  while !valid_entry do
+    puts "*************BARTENDER PORTAL***************\n\n\n"
+    puts "********* 1. I am a New Bartender."
+    puts "********* 2. I am an Existing Bartender."
+    puts "********* 3. Exit this menu."
+    gets_user_input
+    if @input == "1"
+      puts "calling a create_bartender function"
+      create_bartender
+    elsif @input == "2"
+      puts "calling a manage existing bartender menu"
+      update_bartender
+    elsif @input == "3"
+      valid_entry = true
+    else
+      puts "********* Please enter a valid command. *********\n\n\n"
+    end
+  end
 end
 
 def open_bar
@@ -125,19 +166,22 @@ end
   def hire_menu
     puts "*** Hiring Menu for #{@bar_choice.name} ***"
     puts "\n\n *** #{@bar_choice.name} currently has #{@bar_choice.bartenders.size} employee(s)."
-    # binding.pry
+
+    # Check if bar has 3 employees already
     if @bar_choice.bartenders.size > 2
       puts "#{@bar_choice.name} is fully staffed and has no room to hire more bartenders."
       puts "I am now returning to bar management menu"
-      # return #return to menu
+      #return to menu
     else
       room_for_hire = (3 - @bar_choice.bartenders.size)
-      # binding.pry
       puts "#{@bar_choice.name} has room to hire #{3 - @bar_choice.bartenders.size} bartender(s)."
-      unemployed_bartender_chooser #select unemployed to hire
-      #add bartender choice to bar
-      #exit hire_menu
 
+      if Bartender.unemployed.empty?
+        puts "\nThere are currently no unemployed Bartenders!\n"
+        return #exit this function
+      else
+        unemployed_bartender_chooser #hires from unemployed bartenders
+      end
     end
   end
 
@@ -190,6 +234,69 @@ end
       end
     end
   end
+
+def create_bartender
+  # Prompt user for their name
+  puts "Welcome new bartender!"
+  puts "Please enter your name:"
+  gets_user_input
+  #Check if name already exists
+  if Bartender.find_by(name: @input)
+    puts "Boozetown already has a bartender named #{@input}."
+    # puts "Please enter a new name or go back to Bartender Main Menu."
+    return
+  else
+    Bartender.create(name: @input)
+  end
+end
+
+def update_bartender
+  puts '*********Bartender Update Menu*********\n\n\n'
+  puts 'Please Enter a Bartender Name to Update: '
+  # Call bartender_chooser function to get @bartender_choice
+  bartender_chooser
+  if @bartender_choice == nil
+    return
+  end
+  valid_entry = false
+  while !valid_entry do
+    puts "********** Welcome #{@bartender_choice.name} **********"
+    puts "Please make a seleciton from the menu options below. \n\n"
+    puts "    1. List my drink specialties"
+    puts "    2. Add a new drink specialty"
+    puts "    3. Remove a drink specialty"
+    puts "    4. Quit Job"
+    puts "    5. Return to Bartender Portal."
+    # IDEA show list of bars with open slots
+    gets_user_input
+    case @input
+    when '1'
+      puts "Listing your drink specialties"
+    when '2'
+      puts "Adding a new drink specialty"
+    when '3'
+      puts "Removing a drink specialty"
+    when '4'
+      puts "Quitting your job"
+    when '5'
+      puts "Returning to Bartender Portal"
+      valid_entry = true
+    else
+      puts "Please select a valid menu option."
+    end
+  end
+end
+
+def bartender_chooser
+  gets_user_input
+  user_choice = Bartender.find_by(name: @input)
+  if user_choice != nil
+    @bartender_choice = user_choice
+    return
+  else
+    puts "There is no bartender of that name."
+  end
+end
 
 
 end
