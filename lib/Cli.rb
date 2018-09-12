@@ -12,9 +12,9 @@ def gets_user_input
 end
 
 def bar_portal
-  puts "*************BAR OWNER PORTAL***************\n\n\n"
   valid_entry = false
   while !valid_entry do
+    puts "*************BAR OWNER PORTAL***************\n\n\n"
     puts "********* 1. Manage existing bar."
     puts "********* 2. Open new bar."
     puts "********* 3. Exit this menu."
@@ -68,7 +68,7 @@ end
     valid_entry = false
     while !valid_entry do
 
-      puts "********* You have chosen to manage #{@bar_choice.name}."
+      puts "********* You are currently managing #{@bar_choice.name}. *********"
       puts "Please make a selection from the menu options below.\n\n"
       puts "    1. Print Current Drink menu"
       puts "    2. List Current Employees"
@@ -76,7 +76,7 @@ end
       puts "    4. Fire Employee"
       puts "    5. Return to Bar Owner Portal"
       gets_user_input
-      valid_entry = true
+      # valid_entry = true
       case @input
       when '1'
         puts "You have chosen to Print Current Drink menu."
@@ -89,11 +89,13 @@ end
           hire_menu
       when '4'
         puts "You have chosen to Fire an employee."
+        @bar_choice.list_current_employees
       when '5'
         puts "You have chosen to return to Bar Owner Portal"
+        valid_entry = true
       else
         puts "Please select a valid menu option."
-        valid_entry = false
+        # valid_entry = false
       end
     end
   end
@@ -118,6 +120,7 @@ end
         puts "\n\n Please select an existing bar by number."
       end
     end
+  end
 
   def hire_menu
     puts "*** Hiring Menu for #{@bar_choice.name} ***"
@@ -131,36 +134,40 @@ end
       room_for_hire = (3 - @bar_choice.bartenders.size)
       # binding.pry
       puts "#{@bar_choice.name} has room to hire #{3 - @bar_choice.bartenders.size} bartender(s)."
-      list_unemployed_bartenders
-      #call sub-menu
-      # 1. List unemployed
-      # 2. Create new bartender?1
+      unemployed_bartender_chooser #select unemployed to hire
+      #add bartender choice to bar
+      #exit hire_menu
+
     end
   end
 
-  def list_unemployed_bartenders
+  def unemployed_bartender_chooser
     unemployed = Bartender.unemployed
     puts "***Select number of corresponding bartender you want to hire."
 
+    # List unemployed bartenders, assign number to each.
     index = 0
     while index < unemployed.length do
-      puts "#{index + 1}. #{unemployed[index].name}"
+      puts "#{index + 1}. #{unemployed[index].name}, specializes in:"
+      unemployed[index].drinks.each {|drink| puts "       #{drink.name}\n"}
       index += 1
     end
 
-
-    # unemployed.each_with_index do |bartender, index|
-    #   puts "#{index + 1}. #{bartender.name}"
-      # puts "    Specialty Drinks are..."
-      # bartender.drinks.each {|drink| puts "       #{drink.name}\n"}
-    #end
-    # gets_user_input
-    # puts "You have hired #{unemployed[@input - 1].name}"
+    # Select unemployed bartender
+    valid_entry = false
+    while !valid_entry do
+      gets_user_input
+      # Check for valid user choice
+      if @input.to_i > 0 && @input.to_i <= unemployed.length
+        @bartender_choice = unemployed[(@input.to_i - 1)]
+        puts "Congratulations, you have hired #{@bartender_choice.name}"
+        @bar_choice.hire(@bartender_choice)
+        valid_entry = true
+      else
+        puts "Please select a valid entry."
+      end
+    end
   end
-
-end
-
-
 
 
 end
