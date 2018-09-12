@@ -86,10 +86,10 @@ end
         @bar_choice.list_current_employees
       when '3'
         puts "You have chosen to Hire New Employee."
-          hire_menu
+        hire_menu
       when '4'
         puts "You have chosen to Fire an employee."
-        @bar_choice.list_current_employees
+        fire_menu
       when '5'
         puts "You have chosen to return to Bar Owner Portal"
         valid_entry = true
@@ -138,6 +138,28 @@ end
       #add bartender choice to bar
       #exit hire_menu
 
+    end
+  end
+
+  def fire_menu
+    puts "*** Firing Menu for #{@bar_choice.name} ***"
+    puts "*** Please select the number for the corresponding employee you would like to fire. ***"
+    #list of current employees
+    @bar_choice.list_current_employees
+
+    valid_entry = false
+    while !valid_entry do
+      gets_user_input
+      employees = @bar_choice.bartenders
+      #check to see if user input is a valid entry
+      if @input.to_i > 0 && @input.to_i <= @bar_choice.bartenders.length
+        @bartender_choice = employees[(@input.to_i - 1)]
+        puts "#{@bartender_choice.name} no longer works at #{@bar_choice.name}."
+        @bar_choice.fire(@bartender_choice)
+        valid_entry = true
+      else
+        puts "Please select a valid number corresponding to your employee."
+      end
     end
   end
 

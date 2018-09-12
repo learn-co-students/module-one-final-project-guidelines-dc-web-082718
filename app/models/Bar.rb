@@ -35,10 +35,14 @@ class Bar < ActiveRecord::Base
   end
 
   def list_current_employees
+    #self.bartenders
+    index = 1
     self.bartenders.each do |bartender|
-      puts "    #{bartender.name}"
+      puts "    #{index}. #{bartender.name}"
+      index += 1
       bartender.drinks.each{ |drink| puts "       (#{drink.name})" }
     end
+
   end
 
 end
