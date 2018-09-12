@@ -272,8 +272,12 @@ def update_bartender
     case @input
     when '1'
       puts "Listing your drink specialties"
+      @bartender_choice.list_drinks
+      puts "\n\n\n"
     when '2'
       puts "Adding a new drink specialty"
+      drink_adder
+      puts "\n\n\n"
     when '3'
       puts "Removing a drink specialty"
     when '4'
@@ -285,6 +289,20 @@ def update_bartender
       puts "Please select a valid menu option."
     end
   end
+end
+
+def drink_adder
+  puts "Enter the name of the new drink."
+  gets_user_input
+  #See if this drink already exists in the drink table
+  drink_choice = Drink.find_by(name: @input)
+  if drink_choice == nil
+    puts "You are the first bartender to specialize in #{@input}'s."
+    #Add this drink to the drink table
+    drink_choice = Drink.create(name: @input)
+  end
+  #Add this drink to the bartender
+  @bartender_choice.learn_drink(drink_choice.name)
 end
 
 def bartender_chooser

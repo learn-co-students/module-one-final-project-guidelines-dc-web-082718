@@ -4,14 +4,24 @@ class Bartender < ActiveRecord::Base
   has_many :bartender_drinks
   has_many :drinks, through: :bartender_drinks
 
+  def list_drinks
+    self.drinks.each {|drink| puts "      #{drink.name}"}
+  end
+
   # Can learn new drink
   def learn_drink(drink_name)
     # Check if max limit of specializations is reached
     # Can specialize in 2 drinks max.
+    self.drinks.each do |drink|
+      if drink.name == drink_name
+        puts "#{self.name} already specializes in #{drink_name}."
+        return
+      end
+    end
     if self.drinks.size < 2
       new_drink = Drink.find_or_create_by(name: drink_name)
       BartenderDrink.create(bartender_id: self.id, drink_id: new_drink.id)
-      "#{self.name} now knows how to make a really good #{new_drink.name}."
+      puts "#{self.name} now knows how to make a really good #{new_drink.name}."
     else
       my_drinks = self.drinks.collect{ |drink| drink.name}
       puts "#{self.name} can only specialize in two drinks."
@@ -37,7 +47,7 @@ class Bartender < ActiveRecord::Base
 
   #list all bartenders that dont have a job.
   def self.unemployed
-    Bartender.all.where(bar_id: nil) 
+    Bartender.all.where(bar_id: nil)
   end
 
 
