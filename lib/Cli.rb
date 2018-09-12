@@ -20,7 +20,8 @@ def bar_portal
     puts "********* 3. Exit this menu."
     gets_user_input
     if @input == "1"
-      puts "manage_bar"
+      puts "calling manage_bar function"
+      manage_bar
     elsif @input == "2"
       open_bar
     elsif @input == "3"
@@ -41,22 +42,11 @@ def open_bar
   gets_user_input
 
   #check if that bar exists
-  if Bar.find_by(name: @input) == !nil
-    puts "******** #{@input} This bar already exists. *********\n\n"
+  if Bar.find_by(name: @input)
+    puts "******** #{@input} already exists. *********\n\n"
     puts "Which would you like to do? \n\n"
     bar_portal
-    # puts "1. Manage #{@input}"
-    # puts "2. Create a new one."
-    # gets_user_input
-    # if @input == "1"
-    #   #manage bar portal
-    #   puts "user going to manage bar portal"
-    # elsif @input == "2"
-    #   #create new bar
-    #   puts "user going to create new bar"
-    # else
-    #   puts "Please enter valid command."
-    # end
+
   else
     #create a new bar
     puts "Your new bar is #{@input}."
@@ -71,10 +61,38 @@ end
 
   #prompt user if they would hire employeees or manage bar
 
-  #
+  def manage_bar
+    puts '*********Bar Management Menu*********\n\n\n'
+    puts 'Please Select a Bar to Manage: '
+    bar_chooser
+    # 1. Print Current Drink menu
+    # 2. List Current Employees
+    # 3. Hire New Employee
+    # 4. Fire Employee
+  end
 
+  def bar_chooser
+    puts "*** List of Existing Bars in Boozetown ***"
+    valid_entry = false
 
+    while !valid_entry do # Prints list until valid entry is made
+      Bar.all.each {|bar| puts "#{bar.id}. #{bar.name}"}
+        puts "\n\n Please select a bar by number"
+        gets_user_input
+      # Validate choice
+        if Bar.find_by(id: @input.to_i) != nil
+        puts "Bar exists"
+        @bar_choice = Bar.find_by(id: @input.to_i)
+        puts @bar_choice.name
+        valid_entry = true
+        # take this choice back into another function
+      else
+        puts "Invalid Entry."
+        puts "\n\n Please select an existing bar by number."
+      end
+    end
 
+  end
 
 
 
