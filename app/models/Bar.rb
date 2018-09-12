@@ -36,8 +36,10 @@ class Bar < ActiveRecord::Base
 
   def list_current_employees
     self.bartenders.each {|bartender| puts "    #{bartender.name}"}
-  end 
+  end
 
+  def hire_menu
+  end
 
 
 end

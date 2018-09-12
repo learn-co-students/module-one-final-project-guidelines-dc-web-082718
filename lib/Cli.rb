@@ -86,6 +86,7 @@ end
         @bar_choice.list_current_employees
       when '3'
         puts "You have chosen to Hire New Employee."
+          hire_menu
       when '4'
         puts "You have chosen to Fire an employee."
       when '5'
@@ -118,13 +119,25 @@ end
       end
     end
 
+  def hire_menu
+    puts "*** Hiring Menu for #{@bar_choice.name} ***"
+    puts "\n\n *** #{@bar_choice.name} currently has #{@bar_choice.bartenders.size} employee(s)."
+    # binding.pry
+    if @bar_choice.bartenders.size > 2
+      puts "#{@bar_choice.name} is fully staffed and has no room to hire more bartenders."
+      puts "I am now returning to bar management menu"
+      # return #return to menu
+    else
+      room_for_hire = (3 - @bar_choice.bartenders.size)
+      # binding.pry
+      puts "#{@bar_choice.name} has room to hire #{3 - @bar_choice.bartenders.size} bartender(s)."
+      puts "I am now calling sub-menu"
+      #call sub-menu
+      # 1. List unemployed
+      # 2. Create new bartender?1
+    end
   end
-
-
-
-
-
-
+end
 
 
 
