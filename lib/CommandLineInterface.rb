@@ -1,7 +1,23 @@
 require 'pry'
 class CommandLineInterface
-  def greet
+
+def art
 system "clear"
+puts "███╗   ███╗███████╗███╗   ███╗███████╗██████╗ ███████╗    ██████╗     ██████╗ ██████╗ ███████╗ █████╗ ███╗   ███╗███████╗██████╗ ███████╗
+████╗ ████║██╔════╝████╗ ████║██╔════╝██╔══██╗██╔════╝    ██╔══██╗    ██╔══██╗██╔══██╗██╔════╝██╔══██╗████╗ ████║██╔════╝██╔══██╗██╔════╝
+██╔████╔██║█████╗  ██╔████╔██║█████╗  ██████╔╝███████╗    ██████╔╝    ██║  ██║██████╔╝█████╗  ███████║██╔████╔██║█████╗  ██████╔╝███████╗
+██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██╔══╝  ██╔══██╗╚════██║    ██╔══██╗    ██║  ██║██╔══██╗██╔══╝  ██╔══██║██║╚██╔╝██║██╔══╝  ██╔══██╗╚════██║
+██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║███████╗██║  ██║███████║    ██║  ██║    ██████╔╝██║  ██║███████╗██║  ██║██║ ╚═╝ ██║███████╗██║  ██║███████║
+╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝    ╚═╝  ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝
+                                                                                                                                         "
+
+end
+
+
+
+
+  def greet
+# system "clear"
     puts "Greetings Human, We are on the search to find your meme."
     puts "Choose one to get started."
   end
@@ -44,8 +60,8 @@ end
 
 def menu_one
  puts "What is your name?"
- user_input = gets.chomp
- user = User.create(name:user_input)
+ user_input = gets.chomp.strip
+ user = User.find_or_create_by(name:user_input)
  menu_one_one(user)
  congratulations(user)
 end
@@ -61,29 +77,31 @@ when "y"
 test1
 when "n"
   puts "Well then come back when you're ready bitch boi."
+  return_menu
 when "yes"
   test1
 
 when "no"
   puts "Well then come back when you're ready bitch boi."
-
+return_menu
 when "Y"
 test1
 
 when "N"
   puts "Well then come back when you're ready bitch boi."
-
+return_menu
 when "Yes"
   test1
 
 when "No"
   puts "Well then come back when you're ready bitch boi."
-
+return_menu
 when "YES"
   test1
 
 when "NO"
   puts "Well then come back when you're ready bitch boi."
+  return_menu
 end
 end
 
@@ -91,9 +109,9 @@ end
 def test1
   system 'clear'
 puts "Great! Let us Begin."
-puts "1) When you are with a group of people, would you usually rather
-a) Join in the talk of the group, or
-b) Talk individually with people you know well?"
+puts "1) When you are with a group of people do you
+a) become the center of attention
+b) talk only with people you know well"
 input = gets.chomp.strip.capitalize
 
 case input
@@ -119,9 +137,9 @@ end
 
 def test2
   system 'clear'
-  puts "2) When you have to meet strangers, do you find it
-  a) Pleasant, or at lease easy, or
-  b) Something that takes a good deal of effort?"
+  puts "2) When you have class or an appointment, you are usually
+  a) On Time ! all day err day
+  b) Late, cause I like sleep"
   input = gets.chomp.strip.capitalize
   case input
   when "A"
@@ -145,9 +163,9 @@ end
 
 def test3
   system 'clear'
-puts "3) Are you
-a) Easy to get to know, or
-b) Hard to get to know?"
+puts "3) Which type of food do you like more?
+a) spicy food
+b) sweet food"
 input = gets.chomp.strip.capitalize
 case input
 when "A"
@@ -171,9 +189,9 @@ end
 
 def test4
   system 'clear'
-  puts "4) Do you usually get along better with
-   a) Realistic people, or
-   b) Imaginative people?"
+  puts "4) Would you rather
+   a) play video games
+   b) go shopping"
   input = gets.chomp.strip.capitalize
 
   case input
@@ -197,9 +215,9 @@ end
 end
 def test5
   system 'clear'
-  puts "5) If you were a teacher, would you rather teach
-   a) Fact courses, or
-   b) Courses involving theory?"
+  puts "5) Which would do you hate more?
+   a) A summer that's too hot
+   b) A winter that's too cold"
   input = gets.chomp.strip.capitalize
   case input
   when "A"
@@ -429,12 +447,6 @@ end
 @@personality
 end
 
-def set_personality_id
-User.all.select do |user|
-  user.name == self
-end
-end
-
 def determine_personality(user)
   if self.final_results == "INTJ"
     user.personality_id = 1
@@ -490,41 +502,175 @@ def get_meme(user)
 my_meme = user.memes.where(personality_id:user.personality_id)
 my_meme[0].url
 # user.memes[number].url
-
 end
-
-
 
 def congratulations(user)
   determine_personality(user)
   meme_url = get_meme(user)
+  user.save
 system "clear"
  puts "Congratulations #{user.name}, you are of the #{self.final_results} personality,
  also known as #{user.memes[0].name}."
 puts "Here is your meme."
 puts meme_url
+sleep 3
+system "open #{meme_url}"
 return_menu
 end
 
 #
 def menu_two
-puts "lul2"
+puts "What is your name?"
+user_input = gets.chomp.strip
+if User.all.include? (User.find_by(name:user_input))
+user = User.find_by(name:user_input)
+get_meme(user)
+menu_two_one(user)
+else
+  puts "That's not in our record biaaattttch"
+  return_menu
+ end
+end
+
+#fix menu_three
+#sleep before meme
+#jpgs instead of website
+
+
+ def menu_two_one(user)
+meme_url = get_meme(user)
+system "clear"
+puts "You are of the #{user.personality.name} personality,
+also known as #{user.memes[0].name}."
+puts "Here is your meme."
+puts meme_url
+return_menu
  end
  # input = gets.chomp.strip
  # User.find_by(name:input).personality
-def menu_three
-  puts "lul3"
+def menu_three()
+  puts "Wanna another crack at it eh?"
+  puts "Let's do it."
+  puts "What is your name?"
+  user_input = gets.chomp.strip
+  if User.all.include? (User.find_by(name:user_input))
+    user = User.find_by(name:user_input)
+    menu_one_one(user)
+    congratulations(user)
+  else
+    system "clear"
+    puts "That's not in our record biaaattttch"
+    return_menu
+   end
 
 end
 
 def menu_four
-  puts "lul4"
+puts "didn't like this test? We didn't like you either."
+puts "What is your name?"
+user_input = gets.chomp.strip
+if User.all.include? (User.find_by(name:user_input))
+user = User.find_by(name:user_input)
+menu_four_one(user)
+else
+  system "clear"
+  puts "That's not in our record biaaattttch"
+  return_menu
+end
+end
+
+def middle_finger
+puts " "
+puts " "
+puts " "
+puts " "
+puts " "
+puts " "
+puts " "
+puts " "
+puts " "
+puts " "
+puts " "
+puts " "
+puts "┌П┐(▀̿Ĺ̯▀̿ ̿)"
+puts "¯\_( ͡~ ͜ʖ ͡°)_/¯"
 
 end
 
-def menu_five
-  puts "lul5"
+def sleep_space
+sleep 5
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+puts " "
+sleep (0.1)
+end
 
+def menu_four_one(user)
+  user.destroy
+  system "clear"
+  middle_finger
+  puts "good riddance heheheh"
+  sleep_space
+  return_menu
+end
+
+def meme_urls
+  Meme.all.collect do |meme|
+meme.url
+end
+end
+
+def menu_five
+  meme_of_the_day =  meme_urls.sample
+  system "clear"
+  puts "Here is your meme of the day!"
+  system "open #{meme_of_the_day}"
+  puts meme_of_the_day
+  return_menu
 end
 
 
