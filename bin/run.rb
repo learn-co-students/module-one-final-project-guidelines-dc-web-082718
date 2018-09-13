@@ -5,7 +5,3 @@ newcli = CommandLineInterface.new
 newcli.greet
 newcli.menu
 newcli.get_user_input
-
-
-
-puts "hello"
