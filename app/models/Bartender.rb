@@ -25,7 +25,7 @@ class Bartender < ActiveRecord::Base
     else
       my_drinks = self.drinks.collect{ |drink| drink.name}
       puts "#{self.name} can only specialize in two drinks."
-      "#{self.name}'s specialties are a #{my_drinks[0]} and a #{my_drinks[1]}'."
+      puts "#{self.name}'s specialties are a #{my_drinks[0]} and a #{my_drinks[1]}'."
     end
   end
 
@@ -34,13 +34,18 @@ class Bartender < ActiveRecord::Base
     # Delete drink_id in bartender_drinks for this bartender
     drop = BartenderDrink.where("bartender_id = ? AND drink_id = ?",
     self.id, drink_id)[0]
-    binding.pry
-    "#{self.name} no longer specializes in #{Drink.find(drink_id).name}."
+    # binding.pry
+    puts "#{self.name} no longer specializes in #{Drink.find(drink_id).name}."
     drop.destroy
   end
 
   # Can quit working at a bar
   def quits_bar
+    if self.bar_id == nil
+      puts "#{self.name} is already unemployed."
+      return
+    end
+    puts "#{self.name} has quit working at #{self.bar.name}."
     self.bar_id = nil
     self.save
   end

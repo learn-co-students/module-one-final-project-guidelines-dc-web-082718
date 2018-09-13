@@ -280,8 +280,10 @@ def update_bartender
       puts "\n\n\n"
     when '3'
       puts "Removing a drink specialty"
+      drink_remover
     when '4'
       puts "Quitting your job"
+      @bartender_choice.quits_bar
     when '5'
       puts "Returning to Bartender Portal"
       valid_entry = true
@@ -314,6 +316,38 @@ def bartender_chooser
   else
     puts "There is no bartender of that name."
   end
+end
+
+def drink_remover
+  #List current drinks validate there are drinks to remove
+  if @bartender_choice.drinks.size == 0
+    puts "You don't currently have any drink specialties to remove."
+    return
+  end
+
+  puts "#{@bartender_choice.name} currently specializes in:"
+  @bartender_choice.list_drinks
+
+  #get input
+  puts "\n\nPlease enter the name of the drink you would like to remove: "
+  valid_choice = false
+  while !valid_choice do
+    gets_user_input
+    @bartender_choice.drinks.each do |drink|
+      if drink.name == @input
+        @bartender_choice.drop_specialization(drink.id)
+        valid_choice = true
+        # puts "#{@bartender_choice.name} "
+        return
+      end
+    end
+    puts "Drink choice invalid, please enter a valid drink name."
+  end
+
+
+  #look up drink_id from input and pass to
+  # #drop_specialization(drink_id)
+
 end
 
 
