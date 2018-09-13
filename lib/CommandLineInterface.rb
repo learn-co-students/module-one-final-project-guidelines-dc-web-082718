@@ -28,6 +28,9 @@ puts "2. Check Test Score"
 puts "3. Retake Test"
 puts "4. Delete My Account"
 puts "5. Spicy Meme of the Day"
+puts "6. Naked Singles in you Area"
+puts "7. The Entire Star Wars IV Movie"
+puts "8. Dancing Parrot"
 end
 
 def get_user_input
@@ -55,10 +58,24 @@ when "5"
 menu_five
 when "5."
 menu_five
+when "6"
+menu_six
+when "6."
+menu_six
+when "7"
+menu_seven
+when "7."
+menu_seven
+when "8"
+menu_eight
+when "8."
+menu_eight
 end
 end
 
+
 def menu_one
+  system "clear"
  puts "What is your name?"
  user_input = gets.chomp.strip
  user = User.find_or_create_by(name:user_input)
@@ -100,6 +117,9 @@ when "YES"
   test1
 
 when "NO"
+  puts "Well then come back when you're ready bitch boi."
+  return_menu
+else
   puts "Well then come back when you're ready bitch boi."
   return_menu
 end
@@ -240,9 +260,9 @@ end
 end
 def test6
   system 'clear'
-  puts "6) Is it higher praise to say someone has
-   a) Common sense, or
-   b) Vision?"
+  puts "6) Who's your favorite Sam?
+   a) Sam
+   b) Sam "
   input = gets.chomp.strip.capitalize
   case input
   when "A"
@@ -266,9 +286,9 @@ end
 
 def test7
   system 'clear'
-puts "7) Which word in the pair appeals to you more?
-  a) Analyze
-  b) Sympathize"
+puts "7) Which statement tickles your fancy more?
+  a) You look amazing!
+  b) You did such a great job!"
   input = gets.chomp.strip.capitalize
   case input
   when "A"
@@ -291,9 +311,9 @@ end
 end
 def test8
   system 'clear'
-  puts "8) Which word in the pair appeals to you more?
-   a) Foresight
-   b) Compassion"
+  puts "8) At the club, you are more likely to
+   a) chill at the bar
+   b) hit da dance floor and shake what your momma gave ya"
   input = gets.chomp.strip.capitalize
   case input
   when "A"
@@ -316,9 +336,9 @@ end
 end
 def test9
   system 'clear'
-  puts "9) Which word in the pair appeals to you more?
-   a) Firm
-   b) Gentle"
+  puts "9) Are you right handed or left handed? Yes this is needed to determine your personality.
+   a) Right
+   b) Left"
   input = gets.chomp.strip.capitalize
   case input
   when "A"
@@ -341,9 +361,9 @@ end
 end
 def test10
   system 'clear'
-   puts "10) Does following a schedule
-   a) Appeal to you, or
-   b) Cramp you?"
+   puts "10) Which pet do you like more?
+   a) Dog
+   b) Cat"
   input = gets.chomp.strip.capitalize
   case input
   when "A"
@@ -366,9 +386,9 @@ end
 end
 def test11
   system 'clear'
-  puts "11) Do you prefer to
-   a) Arrange dates, parties, etc., well in advance, or
-   b) Be free to do whatever looks like fun when the time comes? "
+  puts "11) Are you more likely to
+   a) Arrange dates, parties, etc., well in advance or
+   b) Be down to do whatever looks like fun when the time comes? "
   input = gets.chomp.strip.capitalize
   case input
   when "A"
@@ -391,15 +411,67 @@ end
 end
 def test12
   system 'clear'
-  puts "12) Does the idea of making a list of what you should get
-   a) Appeal to you, or
-   b) Leave you cold"
+  puts "12) Do you like memes?
+   a) heeeelll yeah!
+   b) no"
   input = gets.chomp.strip.capitalize
   case input
   when "A"
   @@results[:J_or_P] << input
   when "B"
   @@results[:J_or_P] << input
+  puts "How dare you"
+  sleep 3
+  puts "Wow"
+  sleep 3
+system "clear"
+  puts "That was ruuude"
+sleep (0.2)
+system "clear"
+  puts "That was ruuuude"
+sleep (0.2)
+system "clear"
+  puts "That was ruuuuude"
+sleep (0.2)
+system "clear"
+  puts "That was ruuuuuude"
+sleep (0.2)
+system "clear"
+  puts "That was ruuuuuuude"
+sleep (0.2)
+system "clear"
+  puts "That was ruuuuuuuude"
+sleep (0.1)
+system "clear"
+  puts "That was ruuuuuuuuuude"
+  sleep (0.1)
+  system "clear"
+    puts "That was ruuuuuuuuuuuuude"
+    sleep (0.1)
+    system "clear"
+      puts "That was ruuuuuuuuuuude"
+      sleep (0.1)
+      system "clear"
+        puts "That was ruuuuuuuuuude"
+        sleep (0.1)
+        system "clear"
+          puts "That was ruuuuuuuuuuude"
+          sleep (1)
+          system "clear"
+            puts "That was ruuuuuuuuuuude."
+  puts "That was ruuuuuuuuuuude."
+    puts "That was ruuuuuuuuuuude."
+      puts "That was ruuuuuuuuuuude."
+        puts "That was ruuuuuuuuuuude."
+          puts "That was ruuuuuuuuuuude."
+            puts "That was ruuuuuuuuuuude."
+              puts "That was ruuuuuuuuuuude."
+                puts "That was ruuuuuuuuuuude."
+                  puts "That was ruuuuuuuuuuude."
+                    puts "That was ruuuuuuuuuuude."
+                      puts "That was ruuuuuuuuuuude."
+                        puts "That was ruuuuuuuuuuude."
+  sleep 6
   else
     puts "That's not one of the choices FOOL, press R to try again."
     rinput = gets.chomp.strip.capitalize
@@ -513,7 +585,7 @@ system "clear"
  also known as #{user.memes[0].name}."
 puts "Here is your meme."
 puts meme_url
-sleep 3
+sleep 5
 system "open #{meme_url}"
 return_menu
 end
@@ -566,6 +638,7 @@ def menu_three()
 end
 
 def menu_four
+  system "clear"
 puts "didn't like this test? We didn't like you either."
 puts "What is your name?"
 user_input = gets.chomp.strip
@@ -590,9 +663,9 @@ puts " "
 puts " "
 puts " "
 puts " "
-puts " "
-puts " "
 puts "┌П┐(▀̿Ĺ̯▀̿ ̿)"
+puts " "
+puts " "
 puts "¯\_( ͡~ ͜ʖ ͡°)_/¯"
 
 end
@@ -673,6 +746,20 @@ def menu_five
   return_menu
 end
 
+
+def menu_six #rick roll
+system "curl -L http://bit.ly/10hA8iC | bash"
+
+
+end
+
+def menu_seven #star wars movie
+system "telnet towel.blinkenlights.nl"
+end
+
+def menu_eight #dancing parrot
+system "curl parrot.live"
+end
 
 def return_menu
 puts "press R to Return to the main menu"
