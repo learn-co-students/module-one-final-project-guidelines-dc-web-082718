@@ -488,7 +488,7 @@ end
 
 def get_meme(user)
 my_meme = user.memes.where(personality_id:user.personality_id)
-my_meme[1].url
+my_meme[0].url
 # user.memes[number].url
 
 end
@@ -499,15 +499,12 @@ def congratulations(user)
   determine_personality(user)
   meme_url = get_meme(user)
 system "clear"
- puts "Congratulations #{user.name}, you are of the #{self.final_results} personality"
+ puts "Congratulations #{user.name}, you are of the #{self.final_results} personality,
+ also known as #{user.memes[0].name}."
 puts "Here is your meme."
-binding.pry
-meme_url
+puts meme_url
 return_menu
 end
-
-
-
 
 #
 def menu_two
