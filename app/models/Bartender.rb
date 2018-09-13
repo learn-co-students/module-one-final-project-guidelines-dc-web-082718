@@ -68,7 +68,7 @@ class Bartender < ActiveRecord::Base
 
     count = 1
     pop_drinks.each do |hash|
-      puts "#{hash[:drink]}   #{hash[:count]}"
+      puts "#{hash[:drink]} is currently made by #{hash[:count]} bartender(s)."
       if count == 3
         return
       else
@@ -91,7 +91,7 @@ class Bartender < ActiveRecord::Base
 
     count = 1
     pop_drinks.each do |hash|
-      puts "#{hash[:drink]}   #{hash[:count]}"
+      puts "#{hash[:drink]} is currently made by #{hash[:count]} bartender(s)."
       if count == 3
         return
       else
@@ -102,28 +102,31 @@ class Bartender < ActiveRecord::Base
   end
 
   def self.unemployed_bartender_drinks
-
+    puts "    These drinks are not on any menu but currently are provided by unemployed bartenders."
     unavailable_drinks = []
 
     Drink.all.each do |drink|
-      available = false
       if drink.bartenders.size > 0
+        available = false
         drink.bartenders.each do |bartender|
           # puts "Bartender bar id: #{bartender.bar_id}  Drink: #{drink.name}"
-          if bartender.bar_id == nil
-            unavailable_drinks << drink.name
+          if bartender.bar_id != nil
+            available = true
           end
           # if bartender.bar_id != nil
           #   available = true
           # end
         end
-        # if !available
-        #   unavailable_drinks << drink.name
-        #   puts "              #{drink.name}"
-        # end
 
+        if !available
+          unavailable_drinks << drink.name
+          puts "  Drink name: #{drink.name}"
+          drink.bartenders.each do |bartender|
+            puts "    - Bartender name: #{bartender.name}"
+          end
+        end
       end
-      puts unavailable_drinks.uniq
+      #puts unavailable_drinks
     end
   end
 
