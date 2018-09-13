@@ -18,10 +18,11 @@ def box_office_data_collector
   doc.css("div.mb-movie").each do |movie_box|
 
     title = movie_box.css("h3.movieTitle").text
+    slug = title.downcase.gsub(/[^\w\s\d]/, '')
     score = movie_box.css("span.tMeterScore").text[0,2]
     url = movie_box.css("a").attr("href").value
 
-    Movie.find_or_create_by(name: title, tomatometer: score, url: url)
+    Movie.find_or_create_by(name: title, tomatometer: score, url: url, slug: slug)
   end
 end
 
@@ -36,12 +37,16 @@ def pull_cast_members(doc, movie)
     # Pull the actor and character name from the CSS
     actor_name = cast_member.css("span").attr("title").value
     character_name = cast_member.css("span.characters").text.slice!(3..-1)
+    actor_slug = actor_name.downcase.gsub(/[^\w\s\d]/, '')
+    if character_name != nil
+      character_slug = character_name.downcase.gsub(/[^\w\s\d]/, '')
+    end
 
     # Find or create an actor based on the actor name pulled.
-    actor = Actor.find_or_create_by(name: actor_name)
+    actor = Actor.find_or_create_by(name: actor_name, slug: actor_slug)
 
     # Create a new character based on this actor and the character pulled.
-    Character.find_or_create_by(name: character_name, actor_id: actor.id, movie_id: movie.id)
+    Character.find_or_create_by(name: character_name, actor_id: actor.id, movie_id: movie.id, slug: character_slug)
 
   end
 end
@@ -51,7 +56,8 @@ def genre_array_parser(array, movie)
   # Associates the genres with the movie through a join table.
   # Returns an array of genres
   array.map do |genre_name|
-    genre = Genre.find_or_create_by(name: genre_name)
+    genre_slug = genre_name.downcase.gsub(/[^\w\s\d]/, '')
+    genre = Genre.find_or_create_by(name: genre_name, slug: genre_slug)
     GenreMovieJoinTable.create(genre_id: genre.id, movie_id: movie.id)
     genre
   end
@@ -69,7 +75,8 @@ end
 
 def find_or_create_director_from(doc)
   director_name = doc.css("div.meta-value")[2].text.strip
-  Director.find_or_create_by(name: director_name)
+  director_slug = director_name.downcase.gsub(/[^\w\s\d]/, '')
+  Director.find_or_create_by(name: director_name, slug: director_slug)
 end
 
 def format_release_date_from(doc)

@@ -105,24 +105,24 @@ def return_to_main_menu?
   activate_main_menu
 end
 
-def titleize(string)
-  string.split.map(&:capitalize).join(' ')
+def slugify(string)
+  string.downcase.gsub(/[^\w\s\d]/, '')
 end
 
 def display_top_ten
   system('clear')
-  top_ten = Movie.top_ten
+  $top_ten = Movie.top_ten
   puts "Today's top ten freshest movies are:"
-  puts "1. #{top_ten[0].name}"
-  puts "2. #{top_ten[1].name}"
-  puts "3. #{top_ten[2].name}"
-  puts "4. #{top_ten[3].name}"
-  puts "5. #{top_ten[4].name}"
-  puts "6. #{top_ten[5].name}"
-  puts "7. #{top_ten[6].name}"
-  puts "8. #{top_ten[7].name}"
-  puts "9. #{top_ten[8].name}"
-  puts "10. #{top_ten[9].name}"
+  puts "1. #{$top_ten[0].name}"
+  puts "2. #{$top_ten[1].name}"
+  puts "3. #{$top_ten[2].name}"
+  puts "4. #{$top_ten[3].name}"
+  puts "5. #{$top_ten[4].name}"
+  puts "6. #{$top_ten[5].name}"
+  puts "7. #{$top_ten[6].name}"
+  puts "8. #{$top_ten[7].name}"
+  puts "9. #{$top_ten[8].name}"
+  puts "10. #{$top_ten[9].name}"
 end
 
 def see_more_info?
@@ -135,6 +135,34 @@ def see_more_info?
   end
 end
 
+def top_ten_response_reader(response)
+
+  case response
+  when "1"
+    puts $top_ten[0].info
+  when "2"
+    puts $top_ten[1].info
+  when "3"
+    puts $top_ten[2].info
+  when "4"
+    puts $top_ten[3].info
+  when "5"
+    puts $top_ten[4].info
+  when "6"
+    puts $top_ten[5].info
+  when "7"
+    puts $top_ten[6].info
+  when "8"
+    puts $top_ten[7].info
+  when "9"
+    puts $top_ten[8].info
+  when "10"
+    puts $top_ten[9].info
+  else
+    put_movie_info(response)
+  end
+end
+
 def top_ten_menu
 
   display_top_ten
@@ -143,21 +171,25 @@ def top_ten_menu
 
   case yesno
   when "YES"
-    movie = ask_for_movie
+    response = ask_for_top_ten_movie
     puts "\n"
-    put_movie_info(movie)
+    top_ten_response_reader(response)
   end
 
 end
 
 def ask_for_movie
-  #TODO Did you mean...?
   prompt = TTY::Prompt.new
   prompt.ask("Enter the name of a movie.", required: true)
 end
 
-def invalid_movie_helper(movie_name)
-  matches = Movie.all.select{|movie| movie.name.include?(movie_name)}
+def ask_for_top_ten_movie
+  prompt = TTY::Prompt.new
+  prompt.ask("Enter the name or number of a movie.", required: true)
+end
+
+def invalid_movie_helper(movie_slug)
+  matches = Movie.all.select{|movie| movie.slug.include?(movie_slug)}
   if matches != []
     puts 'That is not a valid movie. Did you mean...'
     matches.each {|movie| puts movie.name}
@@ -166,8 +198,8 @@ def invalid_movie_helper(movie_name)
   end
 end
 
-def invalid_actor_helper(actor_name)
-  matches = Actor.all.select{|actor| actor.name.include?(actor_name)}
+def invalid_actor_helper(actor_slug)
+  matches = Actor.all.select{|actor| actor.slug.include?(actor_slug)}
   if matches != []
     puts 'That is not a valid actor. Did you mean...'
     matches.each {|actor| puts actor.name}
@@ -176,8 +208,8 @@ def invalid_actor_helper(actor_name)
   end
 end
 
-def invalid_director_helper(director_name)
-  matches = Director.all.select{|director| director.name.include?(director_name)}
+def invalid_director_helper(director_slug)
+  matches = Director.all.select{|director| director.slug.include?(director_slug)}
   if matches != []
     puts 'That is not a valid director. Did you mean...'
     matches.each {|director| puts director.name}
@@ -186,8 +218,8 @@ def invalid_director_helper(director_name)
   end
 end
 
-def invalid_genre_helper(genre_name)
-  matches = Genre.all.select{|genre| genre.name.include?(genre_name)}
+def invalid_genre_helper(genre_slug)
+  matches = Genre.all.select{|genre| genre.slug.include?(genre_slug)}
   if matches != []
     puts 'That is not a valid genre. Did you mean...'
     matches.each {|genre| puts genre.name}
@@ -227,17 +259,15 @@ end
 def put_movie_info(movie_name)
   # Accepts a movie name as a string and puts info about it if it exists
 
-  if Movie.find_by(name: movie_name) == nil
-    movie_name = titleize(movie_name)
-  end
+  movie_slug = slugify(movie_name)
 
-  if Movie.find_by(name: movie_name) != nil
-    movie = Movie.find_by(name: movie_name)
+  if Movie.find_by(slug: movie_slug) != nil
+    movie = Movie.find_by(slug: movie_slug)
     puts movie.info
     want_to_see_cast?(movie)
     want_to_see_reviews?(movie)
   else
-    invalid_movie_helper(movie_name)
+    invalid_movie_helper(movie_slug)
   end
 end
 
@@ -266,8 +296,8 @@ def list_genres
   end
 end
 
-def find_movies_by_genre(genre)
-  Genre.find_by(name: genre).movies
+def find_movies_by_genre(genre_slug)
+  Genre.find_by(slug: genre_slug).movies
 end
 
 def genre_menu_method
@@ -275,14 +305,10 @@ def genre_menu_method
   list_genres
 
   genre = genre_prompter
+  genre_slug = slugify(genre)
 
-  # If the genre cannot be found, try titleizing it
-  if Genre.find_by(name: genre) == nil
-    genre = titleize(genre)
-  end
-
-  if Genre.find_by(name: genre) != nil
-    movies = find_movies_by_genre(genre)
+  if Genre.find_by(slug: genre_slug) != nil
+    movies = find_movies_by_genre(genre_slug)
     movies.each do |movie|
       if movie.runtime == 0
         puts "#{movie.name}. #{movie.certified_fresh?.capitalize}."
@@ -291,7 +317,7 @@ def genre_menu_method
       end
     end
   else
-    invalid_genre_helper(genre)
+    invalid_genre_helper(genre_slug)
   end
 end
 
@@ -304,25 +330,21 @@ def actor_prompter
   prompt.ask("Enter the name of an actor.", required: true)
 end
 
-def find_movies_by_actor(actor)
-  Actor.find_by(name: actor).movies
+def find_movies_by_actor(actor_slug)
+  Actor.find_by(slug: actor_slug).movies
 end
 
 def actor_menu_method
 
   actor = actor_prompter
+  actor_slug = slugify(actor)
 
-  # if the actor cannot be found, try titleizing it to see if that helps
-  if Actor.find_by(name: actor) == nil
-    actor = titleize(actor)
-  end
-
-  if Actor.find_by(name: actor) != nil
+  if Actor.find_by(slug: actor_slug) != nil
     # Finds movies by the actor and then turns them into an array of strings.
-    movie_titles = movie_objects_to_names(find_movies_by_actor(actor))
+    movie_titles = movie_objects_to_names(find_movies_by_actor(actor_slug))
     puts "#{actor} is currently starring in #{movie_titles.join(', ')}."
   else
-    invalid_actor_helper(actor)
+    invalid_actor_helper(actor_slug)
   end
 
 end
@@ -332,25 +354,21 @@ def director_prompter
   prompt.ask("Enter the name of a director.", required: true)
 end
 
-def find_movies_by_director(director)
-  Director.find_by(name: director).movies
+def find_movies_by_director(director_slug)
+  Director.find_by(slug: director_slug).movies
 end
 
 def director_menu_method
-  # Asks for a director and titleizes her name
+
   director = director_prompter
+  director_slug = slugify(director)
 
-  # If that director cannot be found, try titleizing
-  if Director.find_by(name: director) == nil
-    director = titleize(director)
-  end
-
-  if Director.find_by(name: director) != nil
+  if Director.find_by(slug: director_slug) != nil
     puts "#{director} currently has the following movies in theaters:"
-    movies = find_movies_by_director(director)
+    movies = find_movies_by_director(director_slug)
     movies.each{|movie| puts movie.name}
   else
-    invalid_director_helper(director)
+    invalid_director_helper(director_slug)
   end
 end
 
@@ -420,12 +438,12 @@ end
 
 def which_movie_to_review?
   movie_name = ask_for_movie
-  formatted_movie_name = titleize(movie_name)
-  if Movie.find_by(name: formatted_movie_name) != nil
-    movie = Movie.find_by(name: formatted_movie_name)
+  movie_slug = slugify(movie_name)
+  if Movie.find_by(slug: movie_slug) != nil
+    movie = Movie.find_by(slug: movie_slug)
     create_review(movie)
   else
-    invalid_movie_helper(formatted_movie_name)
+    invalid_movie_helper(movie_slug)
   end
 end
 
