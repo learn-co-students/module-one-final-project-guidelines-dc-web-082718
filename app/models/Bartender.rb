@@ -55,6 +55,79 @@ class Bartender < ActiveRecord::Base
     Bartender.all.where(bar_id: nil)
   end
 
+  def self.common_drinks
+    pop_drinks = []
+    Drink.all.each do |drink|
+      if drink.bartenders.size > 0
+        pop_drinks << {:drink => drink.name, :count => drink.bartenders.size}
+      end
+    end
+    pop_drinks.sort_by! do |hash|
+      -hash[:count]
+    end
+
+    count = 1
+    pop_drinks.each do |hash|
+      puts "#{hash[:drink]}   #{hash[:count]}"
+      if count == 3
+        return
+      else
+        count += 1
+      end
+    end
+
+  end
+
+  def self.rarest_drinks
+    pop_drinks = []
+    Drink.all.each do |drink|
+      if drink.bartenders.size > 0
+        pop_drinks << {:drink => drink.name, :count => drink.bartenders.size}
+      end
+    end
+    pop_drinks.sort_by! do |hash|
+      hash[:count]
+    end
+
+    count = 1
+    pop_drinks.each do |hash|
+      puts "#{hash[:drink]}   #{hash[:count]}"
+      if count == 3
+        return
+      else
+        count += 1
+      end
+    end
+
+  end
+
+  def self.unemployed_bartender_drinks
+
+    unavailable_drinks = []
+
+    Drink.all.each do |drink|
+      available = false
+      if drink.bartenders.size > 0
+        drink.bartenders.each do |bartender|
+          # puts "Bartender bar id: #{bartender.bar_id}  Drink: #{drink.name}"
+          if bartender.bar_id == nil
+            unavailable_drinks << drink.name
+          end
+          # if bartender.bar_id != nil
+          #   available = true
+          # end
+        end
+        # if !available
+        #   unavailable_drinks << drink.name
+        #   puts "              #{drink.name}"
+        # end
+
+      end
+      puts unavailable_drinks.uniq
+    end
+  end
+
+
 
 
 end
