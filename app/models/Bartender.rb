@@ -21,11 +21,11 @@ class Bartender < ActiveRecord::Base
     if self.drinks.size < 2
       new_drink = Drink.find_or_create_by(name: drink_name)
       BartenderDrink.create(bartender_id: self.id, drink_id: new_drink.id)
-      puts "#{self.name} now knows how to make a really good #{new_drink.name}."
+      puts "#{self.name} has a new specialty drink: #{new_drink.name}."
     else
       my_drinks = self.drinks.collect{ |drink| drink.name}
       puts "#{self.name} can only specialize in two drinks."
-      puts "#{self.name}'s specialties are a #{my_drinks[0]} and a #{my_drinks[1]}'."
+      puts "#{self.name}'s specialties are a(n) #{my_drinks[0]} and a(n) #{my_drinks[1]}'."
     end
   end
 

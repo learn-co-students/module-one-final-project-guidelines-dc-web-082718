@@ -3,6 +3,7 @@ class CommandLineInterface
 attr_accessor :input
 
   def greet
+    puts "\e[H\e[2J"
     puts "
 
      ______   _______  _______  _______  _______ _________ _______           _
@@ -25,6 +26,7 @@ attr_accessor :input
   def main_menu
   valid_entry = false
   while !valid_entry do
+    greet
     puts "*************MAIN MENU***************\n\n\n"
     puts "********* 1. Bar Owner Portal"
     puts "********* 2. Bartender Portal"
@@ -47,33 +49,35 @@ attr_accessor :input
 end
 
   def bar_portal
-  valid_entry = false
-  while !valid_entry do
-    puts "*************BAR OWNER PORTAL***************\n\n\n"
-    puts "********* 1. Manage existing bar."
-    puts "********* 2. Open new bar."
-    puts "********* 3. Exit this menu."
-    puts "\n\n\nPlease enter a number from the options above:"
-    gets_user_input
-    if @input == "1"
-      manage_bar
-    elsif @input == "2"
-      open_bar
-    elsif @input == "3"
-      valid_entry = true
-    else
-      puts "********* Please enter a valid command. *********\n\n\n"
+    valid_entry = false
+    while !valid_entry do
+      puts "\e[H\e[2J"
+      puts "*************BAR OWNER PORTAL***************\n\n\n"
+      puts "********* 1. Manage Existing Bar."
+      puts "********* 2. Open New Bar."
+      puts "********* 3. Return to Main Menu."
+      puts "\n\n\nPlease enter a number from the options above:"
+      gets_user_input
+      if @input == "1"
+        manage_bar
+      elsif @input == "2"
+        open_bar
+      elsif @input == "3"
+        valid_entry = true
+      else
+        puts "********* Please enter a valid command. *********\n\n\n"
+      end
     end
   end
-end
 
   def bartender_portal
     valid_entry = false
     while !valid_entry do
+      puts "\e[H\e[2J"
       puts "*************BARTENDER PORTAL***************\n\n\n"
       puts "********* 1. I am a New Bartender."
       puts "********* 2. I am an Existing Bartender."
-      puts "********* 3. Exit this menu."
+      puts "********* 3. Return to Main Menu."
       puts "\n\n\nPlease enter a number from the options above:"
       gets_user_input
       if @input == "1"
@@ -112,7 +116,7 @@ end
 
   def manage_bar
     puts "*************Bar Management Menu***************\n\n\n"
-    puts "\n\n\n"
+    puts "\n"
     puts 'Please Select a Bar to Manage: '
     bar_chooser
     #if bar_chooser chooses "exit" @bar_choice is nil. Return to leave this menu
@@ -296,7 +300,7 @@ end
     gets_user_input
     case @input
     when '1'
-      puts "Listing your drink specialties"
+      puts "#{@bartender_choice.name} currently specializes in:"
       if @bartender_choice.drinks.size == 0
         puts "You currently have no drink specialties."
         puts "(You may declare up to two cocktail specialties.)"
@@ -305,17 +309,13 @@ end
         puts "\n\n\n"
       end
     when '2'
-      puts "Adding a new drink specialty"
       drink_adder
       puts "\n\n\n"
     when '3'
-      puts "Removing a drink specialty"
       drink_remover
     when '4'
-      puts "Quitting your job"
       @bartender_choice.quits_bar
     when '5'
-      puts "Returning to Bartender Portal"
       valid_entry = true
     else
       puts "Please select a valid menu option."
