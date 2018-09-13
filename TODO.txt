@@ -1,3 +1,5 @@
-- Did you mean...? when entering incomplete strings
-- Deal with pages that don't have a runtime
-- When scraper is run it should clear and update movies but not users
+- titleization is causing problems for movies where not every word is capitalized
+- - make database queries non-case sensitive?
+- When an actor has a dash in their name, titleize is not working
+
+- slugs slug slugify

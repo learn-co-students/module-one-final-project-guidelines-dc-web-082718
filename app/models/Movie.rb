@@ -28,8 +28,6 @@ class Movie < ActiveRecord::Base
   end
 
   def self.family_friendly
-    #TODO This is pretty ugly, definitely should be refactored, but
-    # I was struggling to get it to work with higher level methods
     array = []
     all.map do |movie|
       movie.genres.each do |genre|
@@ -56,11 +54,13 @@ class Movie < ActiveRecord::Base
   def info
     puts "#{name} is rated #{rating}."
     puts "#{name} is #{certified_fresh?}!"
-    puts "#{name} has a runtime of #{runtime} minutes."
+    if runtime > 0
+      puts "#{name} has a runtime of #{runtime} minutes."
+    end
     puts "Directed by #{director.name}."
     puts "Written by #{writer}."
     puts "Critical consensus: #{critic_consensus}"
-    #TODO Print the movie date in a more legible fashion.
+    #TODO are movie dates consistently legible?
     puts "Entered theaters on #{release_date}."
   end
 
@@ -76,21 +76,25 @@ class Movie < ActiveRecord::Base
 
     if three_reviews.length == 0
       puts "There are no user reviews for this movie"
+      puts "\n"
     end
 
     if three_reviews.length >= 1
       puts "#{three_reviews[0].user.name} said: "
       print "#{three_reviews[0].content}"
+      puts "\n"
     end
 
     if three_reviews.length >= 2
       puts "#{three_reviews[1].user.name} said: "
       print "#{three_reviews[1].content}"
+      puts "\n"
     end
 
     if three_reviews.length >= 3
       puts "#{three_reviews[2].user.name} said: "
       puts "#{three_reviews[2].content}"
+      puts "\n"
     end
 
   end

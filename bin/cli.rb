@@ -46,12 +46,12 @@ end
 
 def ask_for_name
   prompt = TTY::Prompt.new
-  prompt.ask("Please enter your name.")
+  prompt.ask("Please enter your name.", required: true)
 end
 
 def ask_for_age
   prompt = TTY::Prompt.new
-  prompt.ask("Please enter your age.")
+  prompt.ask("Please enter your age.", required: true)
 end
 
 def return_to_login_menu?
@@ -85,12 +85,12 @@ end
 
 def ask_for_username
   prompt = TTY::Prompt.new
-  prompt.ask("Please enter your username.")
+  prompt.ask("Please enter your username.", required: true)
 end
 
 def ask_for_password
   prompt = TTY::Prompt.new
-  prompt.mask("Please enter your password.")
+  prompt.mask("Please enter your password.", required: true)
 end
 
 def welcome_user
@@ -98,23 +98,6 @@ def welcome_user
 end
 
 # Main menu methods
-
-def main_menu
-  system('clear')
-  puts File.read('app/ascii/tomatr_ascii')
-  puts "Hello, #{$current_user.name}!"
-  prompt = TTY::Prompt.new
-  prompt.select("Choose a menu option?") do |menu|
-    menu.choice 'See the top ten freshest movies in theaters', 1
-    menu.choice "Find information about a specific movie", 2
-    menu.choice "Find movies in a specific genre", 3
-    menu.choice 'Find family-friendly movies', 4
-    menu.choice 'Find movies starring a specific actor', 5
-    menu.choice 'Find movies with a specific director', 6
-    menu.choice 'Leave a review', 7
-    menu.choice 'Exit Tomatr', 8
-  end
-end
 
 def return_to_main_menu?
   return_prompt = TTY::Prompt.new
@@ -145,7 +128,7 @@ end
 def see_more_info?
   prompt = TTY::Prompt.new
   puts "\n"
-  prompt.yes?("Would you like to see more info about one of these movies?") do |q|
+  prompt.yes?("Would you like to see more info about one of these movies?", default: "NO") do |q|
     q.suffix 'YES/NO'
     q.positive 'YES'
     q.negative 'NO'
@@ -163,11 +146,6 @@ def top_ten_menu
     movie = ask_for_movie
     puts "\n"
     put_movie_info(movie)
-    return_to_main_menu?
-  when "NO"
-    return_to_main_menu?
-  else
-    return_to_main_menu?
   end
 
 end
@@ -175,12 +153,52 @@ end
 def ask_for_movie
   #TODO Did you mean...?
   prompt = TTY::Prompt.new
-  prompt.ask("Enter the name of a movie.")
+  prompt.ask("Enter the name of a movie.", required: true)
+end
+
+def invalid_movie_helper(movie_name)
+  matches = Movie.all.select{|movie| movie.name.include?(movie_name)}
+  if matches != []
+    puts 'That is not a valid movie. Did you mean...'
+    matches.each {|movie| puts movie.name}
+  else
+    puts 'That is not a valid movie.'
+  end
+end
+
+def invalid_actor_helper(actor_name)
+  matches = Actor.all.select{|actor| actor.name.include?(actor_name)}
+  if matches != []
+    puts 'That is not a valid actor. Did you mean...'
+    matches.each {|actor| puts actor.name}
+  else
+    puts 'That is not a valid actor.'
+  end
+end
+
+def invalid_director_helper(director_name)
+  matches = Director.all.select{|director| director.name.include?(director_name)}
+  if matches != []
+    puts 'That is not a valid director. Did you mean...'
+    matches.each {|director| puts director.name}
+  else
+    puts 'That is not a valid director.'
+  end
+end
+
+def invalid_genre_helper(genre_name)
+  matches = Genre.all.select{|genre| genre.name.include?(genre_name)}
+  if matches != []
+    puts 'That is not a valid genre. Did you mean...'
+    matches.each {|genre| puts genre.name}
+  else
+    puts 'That is not a valid genre.'
+  end
 end
 
 def want_to_see_cast?(movie)
   prompt = TTY::Prompt.new
-  yesno = prompt.yes?("Would you like to see info about the cast?") do |q|
+  yesno = prompt.yes?("Would you like to see info about the cast?", default: "NO") do |q|
     q.suffix 'YES/NO'
     q.positive 'YES'
     q.negative 'NO'
@@ -194,7 +212,7 @@ end
 
 def want_to_see_reviews?(movie)
   prompt = TTY::Prompt.new
-  yesno = prompt.yes?("Would you like to see some reviews about this movie?") do |q|
+  yesno = prompt.yes?("Would you like to see some reviews about this movie?", default: "NO") do |q|
     q.suffix 'YES/NO'
     q.positive 'YES'
     q.negative 'NO'
@@ -208,28 +226,34 @@ end
 
 def put_movie_info(movie_name)
   # Accepts a movie name as a string and puts info about it if it exists
-  formatted_movie_name = titleize(movie_name)
-    if Movie.find_by(name: formatted_movie_name) != nil
-      movie = Movie.find_by(name: formatted_movie_name)
-      puts movie.info
-      want_to_see_cast?(movie)
-      want_to_see_reviews?(movie)
-      return_to_main_menu?
-    else
-      puts 'That is not a valid movie. Returning to menu.'
-      return_to_main_menu?
-    end
+
+  if Movie.find_by(name: movie_name) == nil
+    movie_name = titleize(movie_name)
+  end
+
+  if Movie.find_by(name: movie_name) != nil
+    movie = Movie.find_by(name: movie_name)
+    puts movie.info
+    want_to_see_cast?(movie)
+    want_to_see_reviews?(movie)
+  else
+    invalid_movie_helper(movie_name)
+  end
 end
 
 def family_friendly_finder
   Movie.family_friendly.each do |movie|
-    puts "#{movie.name}. #{movie.runtime} minute runtime. #{movie.certified_fresh?.capitalize}."
+    if movie.runtime == 0
+      puts "#{movie.name}. #{movie.certified_fresh?.capitalize}."
+    else
+      puts "#{movie.name}. #{movie.runtime} minute runtime. #{movie.certified_fresh?.capitalize}."
+    end
   end
 end
 
 def genre_prompter
   prompt = TTY::Prompt.new
-  prompt.ask("Enter the name of a genre.")
+  prompt.ask("Enter the name of a genre.", required: true)
 end
 
 def list_genres
@@ -250,15 +274,24 @@ def genre_menu_method
 
   list_genres
 
-  genre = titleize(genre_prompter)
+  genre = genre_prompter
+
+  # If the genre cannot be found, try titleizing it
+  if Genre.find_by(name: genre) == nil
+    genre = titleize(genre)
+  end
 
   if Genre.find_by(name: genre) != nil
     movies = find_movies_by_genre(genre)
     movies.each do |movie|
-      puts "#{movie.name}. #{movie.runtime} minute runtime. #{movie.certified_fresh?.capitalize}."
+      if movie.runtime == 0
+        puts "#{movie.name}. #{movie.certified_fresh?.capitalize}."
+      else
+        puts "#{movie.name}. #{movie.runtime} minute runtime. #{movie.certified_fresh?.capitalize}."
+      end
     end
   else
-    puts "That is not a valid genre."
+    invalid_genre_helper(genre)
   end
 end
 
@@ -268,7 +301,7 @@ end
 
 def actor_prompter
   prompt = TTY::Prompt.new
-  prompt.ask("Enter the name of an actor.")
+  prompt.ask("Enter the name of an actor.", required: true)
 end
 
 def find_movies_by_actor(actor)
@@ -277,20 +310,26 @@ end
 
 def actor_menu_method
 
-  actor = titleize(actor_prompter)
+  actor = actor_prompter
+
+  # if the actor cannot be found, try titleizing it to see if that helps
+  if Actor.find_by(name: actor) == nil
+    actor = titleize(actor)
+  end
 
   if Actor.find_by(name: actor) != nil
     # Finds movies by the actor and then turns them into an array of strings.
     movie_titles = movie_objects_to_names(find_movies_by_actor(actor))
     puts "#{actor} is currently starring in #{movie_titles.join(', ')}."
   else
-    puts "That is not a valid actor."
+    invalid_actor_helper(actor)
   end
+
 end
 
 def director_prompter
   prompt = TTY::Prompt.new
-  prompt.ask("Enter the name of a director.")
+  prompt.ask("Enter the name of a director.", required: true)
 end
 
 def find_movies_by_director(director)
@@ -299,13 +338,36 @@ end
 
 def director_menu_method
   # Asks for a director and titleizes her name
-  director = titleize(director_prompter)
+  director = director_prompter
+
+  # If that director cannot be found, try titleizing
+  if Director.find_by(name: director) == nil
+    director = titleize(director)
+  end
 
   if Director.find_by(name: director) != nil
-    movie_titles = movie_objects_to_names(find_movies_by_director(director))
-    puts "#{director} currently has out: #{movie_titles.join(', ')}."
+    puts "#{director} currently has the following movies in theaters:"
+    movies = find_movies_by_director(director)
+    movies.each{|movie| puts movie.name}
   else
-    puts "That is not a valid director."
+    invalid_director_helper(director)
+  end
+end
+
+def main_menu
+  system('clear')
+  puts File.read('app/ascii/tomatr_ascii')
+  puts "Hello, #{$current_user.name}!"
+  prompt = TTY::Prompt.new
+  prompt.select("Choose a menu option?") do |menu|
+    menu.choice 'See the top ten freshest movies in theaters', 1
+    menu.choice "Find information about a specific movie", 2
+    menu.choice "Find movies in a specific genre", 3
+    menu.choice 'Find family-friendly movies', 4
+    menu.choice 'Find movies starring a specific actor', 5
+    menu.choice 'Find movies with a specific director', 6
+    menu.choice 'Leave a review', 7
+    menu.choice 'Exit Tomatr', 8
   end
 end
 
@@ -314,9 +376,11 @@ def menu_reader(input)
   when 1
     # top ten movies
     top_ten_menu
+    return_to_main_menu?
   when 2
     # prompt for a specific movie then return info
     put_movie_info(ask_for_movie)
+    return_to_main_menu?
   when 3
     # genre prompt then return info
     genre_menu_method
@@ -335,6 +399,7 @@ def menu_reader(input)
     return_to_main_menu?
   when 7
     review_menu_execute
+    return_to_main_menu?
   when 8
     puts "Come back again soon!"
   end
@@ -351,7 +416,6 @@ end
 
 def review_menu_execute
   which_movie_to_review?
-  return_to_main_menu?
 end
 
 def which_movie_to_review?
@@ -361,14 +425,13 @@ def which_movie_to_review?
     movie = Movie.find_by(name: formatted_movie_name)
     create_review(movie)
   else
-    puts "That is not a valid movie name."
-    return_to_main_menu?
+    invalid_movie_helper(formatted_movie_name)
   end
 end
 
 def ask_for_review_content
   prompt = TTY::Prompt.new
-  prompt.ask("Please enter the text of your review.")
+  prompt.ask("Please enter the text of your review.", required: true)
 end
 
 def create_review(movie)
