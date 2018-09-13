@@ -34,17 +34,18 @@ class Bartender < ActiveRecord::Base
     # Delete drink_id in bartender_drinks for this bartender
     drop = BartenderDrink.where("bartender_id = ? AND drink_id = ?",
     self.id, drink_id)[0]
-    # binding.pry
     puts "#{self.name} no longer specializes in #{Drink.find(drink_id).name}."
     drop.destroy
   end
 
   # Can quit working at a bar
   def quits_bar
+    # Check if they work at a bar first.
     if self.bar_id == nil
       puts "#{self.name} is already unemployed."
       return
     end
+    # Remove bar_id from Bartender
     puts "#{self.name} has quit working at #{self.bar.name}."
     self.bar_id = nil
     self.save
