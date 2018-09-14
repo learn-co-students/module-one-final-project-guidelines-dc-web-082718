@@ -59,7 +59,7 @@ class Bartender < ActiveRecord::Base
   end
 
   def self.common_drinks
-    self.reload
+    # self.reload
     pop_drinks = []
     Drink.all.each do |drink|
       if drink.bartenders.size > 0
@@ -83,7 +83,7 @@ class Bartender < ActiveRecord::Base
   end
 
   def self.rarest_drinks
-    self.reload
+    # self.reload
     pop_drinks = []
     Drink.all.each do |drink|
       if drink.bartenders.size > 0
@@ -107,7 +107,7 @@ class Bartender < ActiveRecord::Base
   end
 
   def self.unemployed_bartender_drinks
-    self.reload
+    # self.reload
     puts "    These drinks are not on any menu but currently are provided by unemployed bartenders."
     unavailable_drinks = []
 
