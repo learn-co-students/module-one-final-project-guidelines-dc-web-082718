@@ -101,7 +101,7 @@ end
       puts "\e[H\e[2J"
       puts "*************MARKET REPORT***************\n\n\n"
       puts "********* 1. View the three most common drinks on menus."
-      puts "********* 2. View the three lease common drinks on menus."
+      puts "********* 2. View the three least common drinks on menus."
       puts "********* 3. Find unemployed bartenders who offer drinks not found on any menu."
       puts "********* 4. Return to Main Menu."
       puts "\n\n\nPlease enter a number from the options above:"
@@ -121,10 +121,12 @@ end
   end
 
   def open_bar
-    #user inputs new bar name
+    puts "\e[H\e[2J"
+    puts "******** New Bar Menu *********"
     puts "******** Enter the name of your new bar. *********\n\n"
     puts "******** (Or type 'exit' to leave this menu.) ********"
     gets_user_input
+    #user inputs new bar name
     if @input == 'exit'
       return
     end
@@ -143,6 +145,7 @@ end
   end
 
   def manage_bar
+    puts "\e[H\e[2J"
     puts "*************Bar Management Menu***************\n\n\n"
     puts "\n"
     puts 'Please Select a Bar to Manage: '
@@ -151,7 +154,7 @@ end
     if @bar_choice == nil
       return
     end
-
+    puts "\e[H\e[2J"
     valid_entry = false
     while !valid_entry do
 
@@ -165,8 +168,12 @@ end
       gets_user_input
       case @input
       when '1'
+        puts "\e[H\e[2J"
+        puts "*** Drink Menu for #{@bar_choice.name} ***"
         @bar_choice.print_drink_menu
       when '2'
+        puts "\e[H\e[2J"
+        puts "*** Employee List for #{@bar_choice.name} ***"
         @bar_choice.list_current_employees
       when '3'
         hire_menu
@@ -181,6 +188,7 @@ end
   end
 
   def bar_chooser
+    puts "\e[H\e[2J"
     puts "*** List of Existing Bars in Boozetown ***"
     valid_entry = false
 
@@ -206,6 +214,7 @@ end
   end
 
   def hire_menu
+    puts "\e[H\e[2J"
     puts "*** Hiring Menu for #{@bar_choice.name} ***"
     puts "\n\n *** #{@bar_choice.name} currently has #{@bar_choice.bartenders.size} employee(s)."
 
@@ -228,6 +237,7 @@ end
   end
 
   def fire_menu
+    puts "\e[H\e[2J"
     puts "*** Firing Menu for #{@bar_choice.name} ***"
     #check if any employees
     if @bar_choice.bartenders.size == 0
@@ -258,6 +268,8 @@ end
   end
 
   def unemployed_bartender_chooser
+    puts "\e[H\e[2J"
+    puts "*** Hiring Menu for #{@bar_choice.name} ***"
     unemployed = Bartender.unemployed
     puts "*** Select number of corresponding bartender you want to hire or type 'exit' to cancel. ***"
 
@@ -308,13 +320,18 @@ end
   end
 
   def update_bartender
+    puts "\e[H\e[2J"
     puts "*************Bartender Update Menu*************\n\n\n"
     puts 'Please Enter a Bartender Name to Update: '
-    # Call bartender_chooser function to get @bartender_choice
+    puts '(or type "exit" to return to Bartender Menu.)'
+
+    #call chooser function
     bartender_chooser
-    if @bartender_choice == nil
+    #return to bartender menu if user exits from chooser function
+    if @input == "exit"
       return
     end
+
     valid_entry = false
     while !valid_entry do
       puts "********** Welcome #{@bartender_choice.name} **********"
@@ -371,13 +388,17 @@ end
   end
 
   def bartender_chooser
-    gets_user_input
-    user_choice = Bartender.find_by(name: @input)
-    if user_choice != nil
-      @bartender_choice = user_choice
-      return
-    else
-      puts "There is no bartender of that name."
+    valid_entry = false
+    while !valid_entry do
+      gets_user_input
+      if @input == "exit"
+        valid_entry = true
+      elsif Bartender.find_by(name: @input) != nil
+        @bartender_choice = Bartender.find_by(name: @input)
+        valid_entry = true
+      else
+        puts "There is no bartender of that name."
+      end
     end
   end
 
@@ -424,6 +445,7 @@ end
 
   def unemployed_drinks
     Bartender.unemployed_bartender_drinks
+    puts "Press any key to return to Market Report:"
     gets_user_input
   end
 

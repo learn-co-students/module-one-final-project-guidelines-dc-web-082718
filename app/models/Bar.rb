@@ -9,9 +9,11 @@ class Bar < ActiveRecord::Base
 
   #Only hire unemployed bartenders.
   def hire(bartender)
+    self.reload
     if self.bartenders.size < 3
       bartender.bar_id = self.id
       bartender.save
+      bartender.reload
     else
       employees = self.who_works_here
       puts "You have a full staff already."
@@ -21,9 +23,11 @@ class Bar < ActiveRecord::Base
 
   def fire(bartender)
     #does this bartender work here
+    self.reload
     if bartender.bar_id == self.id
       bartender.bar_id = nil
       bartender.save
+      bartender.reload
       "#{bartender.name} no longer works for #{self.name}."
     else
       "#{bartender.name} does not work here."
@@ -31,12 +35,18 @@ class Bar < ActiveRecord::Base
   end
 
   def print_drink_menu
+    self.reload
     self.drinks.each {|drink| puts "    #{drink.name}"}
   end
 
   def list_current_employees
     #self.bartenders
+    self.reload
     index = 1
+    if self.bartenders.size == 0
+      puts "\nYou currently have no employees.\n"
+      return
+    end
     self.bartenders.each do |bartender|
       puts "    #{index}. #{bartender.name}"
       index += 1

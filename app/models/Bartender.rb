@@ -5,11 +5,13 @@ class Bartender < ActiveRecord::Base
   has_many :drinks, through: :bartender_drinks
 
   def list_drinks
+    self.reload
     self.drinks.each {|drink| puts "      #{drink.name}"}
   end
 
   # Can learn new drink
   def learn_drink(drink_name)
+    self.reload
     # Check if max limit of specializations is reached
     # Can specialize in 2 drinks max.
     self.drinks.each do |drink|
@@ -34,13 +36,14 @@ class Bartender < ActiveRecord::Base
     # Delete drink_id in bartender_drinks for this bartender
     drop = BartenderDrink.where("bartender_id = ? AND drink_id = ?",
     self.id, drink_id)[0]
-    # binding.pry
+    self.reload
     puts "#{self.name} no longer specializes in #{Drink.find(drink_id).name}."
     drop.destroy
   end
 
   # Can quit working at a bar
   def quits_bar
+    self.reload
     if self.bar_id == nil
       puts "#{self.name} is already unemployed."
       return
@@ -56,6 +59,7 @@ class Bartender < ActiveRecord::Base
   end
 
   def self.common_drinks
+    self.reload
     pop_drinks = []
     Drink.all.each do |drink|
       if drink.bartenders.size > 0
@@ -79,6 +83,7 @@ class Bartender < ActiveRecord::Base
   end
 
   def self.rarest_drinks
+    self.reload
     pop_drinks = []
     Drink.all.each do |drink|
       if drink.bartenders.size > 0
@@ -102,6 +107,7 @@ class Bartender < ActiveRecord::Base
   end
 
   def self.unemployed_bartender_drinks
+    self.reload
     puts "    These drinks are not on any menu but currently are provided by unemployed bartenders."
     unavailable_drinks = []
 
@@ -129,8 +135,4 @@ class Bartender < ActiveRecord::Base
       #puts unavailable_drinks
     end
   end
-
-
-
-
 end
