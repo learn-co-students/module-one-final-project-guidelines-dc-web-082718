@@ -235,7 +235,7 @@ end
 end
 def test5
   system 'clear'
-  puts "5) Which would do you hate more?
+  puts "5) Which would you hate more?
    a) A summer that's too hot
    b) A winter that's too cold"
   input = gets.chomp.strip.capitalize
@@ -471,6 +471,9 @@ system "clear"
                     puts "That was ruuuuuuuuuuude."
                       puts "That was ruuuuuuuuuuude."
                         puts "That was ruuuuuuuuuuude."
+30.times do
+puts "That was ruuuuuuuuuuude."
+end
   sleep 6
   else
     puts "That's not one of the choices FOOL, press R to try again."
@@ -653,16 +656,9 @@ end
 end
 
 def middle_finger
-puts " "
-puts " "
-puts " "
-puts " "
-puts " "
-puts " "
-puts " "
-puts " "
-puts " "
-puts " "
+40.times do
+  puts " "
+end
 puts "┌П┐(▀̿Ĺ̯▀̿ ̿)"
 puts " "
 puts " "
@@ -720,6 +716,10 @@ puts " "
 sleep (0.1)
 puts " "
 sleep (0.1)
+40.times do
+  puts " "
+  sleep (0.1)
+end
 end
 
 def menu_four_one(user)
@@ -751,6 +751,7 @@ def menu_six #rick roll
 system "curl -L http://bit.ly/10hA8iC | bash"
 
 
+
 end
 
 def menu_seven #star wars movie
@@ -759,6 +760,7 @@ end
 
 def menu_eight #dancing parrot
 system "curl parrot.live"
+
 end
 
 def return_menu
